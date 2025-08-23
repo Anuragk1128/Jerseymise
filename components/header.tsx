@@ -34,7 +34,7 @@ export function Header() {
           {/* Mobile: logo left, menu right */}
           <div className="flex md:hidden w-full items-center justify-between">
             <Link href="/" className="flex items-center gap-2 min-w-[100px] py-2" aria-label="Jerseymise Home">
-              <Image src="/logo/jerseymise-mark-black.svg" alt="Jerseymise mark" width={28} height={28} priority />
+              <Image src="/logo/JERSEYMISE_LOGO_WHITE_BG.svg" alt="Jerseymise mark" width={28} height={28} priority />
               <span className="font-bold tracking-wide">JERSEYMISE</span>
             </Link>
             <Sheet>
@@ -79,8 +79,8 @@ export function Header() {
         <div className="hidden md:flex items-center w-full h-16 gap-4">
           {/* Left: Logo */}
           <Link href="/" className="flex items-center gap-3 min-w-[120px] py-2" aria-label="Jerseymise Home">
-            <Image src="/logo/jerseymise-mark-black.svg" alt="Jerseymise mark" width={32} height={32} priority />
-            <span className="font-bold text-xl tracking-wide">JERSEYMISE</span>
+            <Image src="/logo/JERSEYMISE_LOGO_WHITE_BG.svg" alt="Jerseymise mark" width={32} height={32} priority />
+            
           </Link>
 
           {/* Categories */}

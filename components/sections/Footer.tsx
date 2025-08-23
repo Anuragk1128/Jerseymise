@@ -8,7 +8,7 @@ export function FooterSection() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10 lg:gap-12">
           <div className="text-left">
             <div className="flex items-center justify-start gap-3 mb-4 min-w-[120px]">
-              <Image src="/logo/jerseymise-mark-white.svg" alt="Jerseymise mark" width={32} height={32} />
+              <Image src="/logo/JERSEYMISE_LOGO_BLACK_BG.svg" alt="Jerseymise mark" width={32} height={32} />
               <span className="font-bold text-xl tracking-wide">JERSEYMISE</span>
             </div>
             <p className="text-gray-400 mb-4 max-w-md">

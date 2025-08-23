@@ -15,8 +15,7 @@ export function Hero() {
       />
       <div className="relative z-20 text-center text-white max-w-4xl mx-auto px-6 md:px-8">
         <div className="flex items-center justify-center gap-3 mb-8 min-w-[120px]">
-          <Image src="/logo/jerseymise-mark-white.svg" alt="Jerseymise mark" width={40} height={40} priority />
-          <span className="font-bold text-3xl md:text-4xl tracking-wide">JERSEYMISE</span>
+         
         </div>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button size="lg" className="text-lg px-8 py-6">
