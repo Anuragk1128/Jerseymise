@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { useCart } from "@/lib/cart-context"
 import { useAuth } from "@/lib/auth-context"
 import { ShoppingCart, Plus, Minus, Trash2 } from "lucide-react"
+import { formatCurrency } from "@/lib/utils"
 
 export function CartDrawer() {
   const { state, dispatch } = useCart()
@@ -118,7 +119,7 @@ export function CartDrawer() {
                           </div>
                           <div className="flex items-center gap-2">
                             <span className="font-medium text-sm">
-                              ${(item.product.price * item.quantity).toFixed(2)}
+                              {formatCurrency(item.product.price * item.quantity)}
                             </span>
                             <Button
                               variant="ghost"
@@ -138,7 +139,7 @@ export function CartDrawer() {
 
               <div className="border-t pt-4 space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-lg font-semibold">Total: ${state.total.toFixed(2)}</span>
+                  <span className="text-lg font-semibold">Total: {formatCurrency(state.total)}</span>
                 </div>
                 <div className="space-y-2">
                   {isAuthenticated ? (

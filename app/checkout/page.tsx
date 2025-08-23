@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast"
 import { CreditCard, Truck, Shield, ArrowLeft, Loader2 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { formatCurrency } from "@/lib/utils"
 
 interface ShippingInfo {
   firstName: string
@@ -438,7 +439,7 @@ export default function CheckoutPage() {
                             <div className="flex justify-between items-center mt-1">
                               <span className="text-xs text-muted-foreground">Qty: {item.quantity}</span>
                               <span className="font-medium text-sm">
-                                ${(item.product.price * item.quantity).toFixed(2)}
+                                {formatCurrency(item.product.price * item.quantity)}
                               </span>
                             </div>
                           </div>
@@ -452,20 +453,20 @@ export default function CheckoutPage() {
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span>Subtotal</span>
-                        <span>${subtotal.toFixed(2)}</span>
+                        <span>{formatCurrency(subtotal)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span>Shipping</span>
-                        <span>{shippingCost === 0 ? "Free" : `$${shippingCost.toFixed(2)}`}</span>
+                        <span>{shippingCost === 0 ? "Free" : `${formatCurrency(shippingCost)}`}</span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span>Tax</span>
-                        <span>${tax.toFixed(2)}</span>
+                        <span>{formatCurrency(tax)}</span>
                       </div>
                       <Separator />
                       <div className="flex justify-between font-semibold">
                         <span>Total</span>
-                        <span>${total.toFixed(2)}</span>
+                        <span>{formatCurrency(total)}</span>
                       </div>
                     </div>
 

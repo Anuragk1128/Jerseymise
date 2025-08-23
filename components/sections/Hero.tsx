@@ -1,4 +1,5 @@
 import Image from "next/image"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
 
@@ -18,11 +19,14 @@ export function Hero() {
          
         </div>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Link href="https://v0-hoe.vercel.app/" target="_blank" rel="noopener noreferrer">
           <Button size="lg" className="text-lg px-8 py-6">
             
             Shop Now
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
+          </Link>
+          <Link href="/products">
           <Button
             size="lg"
             variant="outline"
@@ -30,6 +34,7 @@ export function Hero() {
           >
             View Collection
           </Button>
+          </Link>
         </div>
       </div>
     </section>

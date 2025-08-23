@@ -11,6 +11,7 @@ import { useCart } from "@/lib/cart-context"
 import { products } from "@/lib/mock-data"
 import { Star, Heart, Truck, RotateCcw, Shield, Plus, Minus } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { formatCurrency } from "@/lib/utils"
 
 export default function ProductPage() {
   const params = useParams()
@@ -126,9 +127,9 @@ export default function ProductPage() {
                 )}
               </div>
               <div className="flex items-center gap-3 mb-6">
-                <span className="text-3xl font-bold">${product.price}</span>
+                <span className="text-3xl font-bold">{formatCurrency(product.price)}</span>
                 {product.originalPrice && (
-                  <span className="text-xl text-muted-foreground line-through">${product.originalPrice}</span>
+                  <span className="text-xl text-muted-foreground line-through">{formatCurrency(product.originalPrice)}</span>
                 )}
               </div>
             </div>
@@ -208,7 +209,7 @@ export default function ProductPage() {
                 onClick={addToCart}
                 disabled={!product.inStock || !selectedSize || !selectedColor}
               >
-                Add to Cart - ${(product.price * quantity).toFixed(2)}
+                Add to Cart - {formatCurrency(product.price * quantity)}
               </Button>
               <Button variant="outline" size="lg">
                 <Heart className="h-5 w-5" />
@@ -221,7 +222,7 @@ export default function ProductPage() {
                 <Truck className="h-5 w-5 text-primary" />
                 <div>
                   <p className="font-medium text-sm">Free Shipping</p>
-                  <p className="text-xs text-muted-foreground">On orders over $75</p>
+                  <p className="text-xs text-muted-foreground">On orders over {formatCurrency(75)}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -265,10 +266,10 @@ export default function ProductPage() {
                   <CardContent className="p-4">
                     <h3 className="font-semibold mb-2">{relatedProduct.name}</h3>
                     <div className="flex items-center gap-2">
-                      <span className="font-bold">${relatedProduct.price}</span>
+                      <span className="font-bold">{formatCurrency(relatedProduct.price)}</span>
                       {relatedProduct.originalPrice && (
                         <span className="text-sm text-muted-foreground line-through">
-                          ${relatedProduct.originalPrice}
+                          {formatCurrency(relatedProduct.originalPrice)}
                         </span>
                       )}
                     </div>

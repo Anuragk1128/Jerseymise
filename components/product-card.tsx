@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Star, Heart } from "lucide-react"
 import type { Product } from "@/lib/mock-data"
+import { formatCurrency } from "@/lib/utils"
 
 interface ProductCardProps {
   product: Product
@@ -55,9 +56,9 @@ export function ProductCard({ product, viewMode = "grid" }: ProductCardProps) {
                 </div>
                 <p className="text-muted-foreground text-sm mb-4 line-clamp-2">{product.description}</p>
                 <div className="flex items-center gap-2 mb-4">
-                  <span className="text-xl font-bold">${product.price}</span>
+                  <span className="text-xl font-bold">{formatCurrency(product.price)}</span>
                   {product.originalPrice && (
-                    <span className="text-sm text-muted-foreground line-through">${product.originalPrice}</span>
+                    <span className="text-sm text-muted-foreground line-through">{formatCurrency(product.originalPrice)}</span>
                   )}
                 </div>
               </div>
@@ -116,9 +117,9 @@ export function ProductCard({ product, viewMode = "grid" }: ProductCardProps) {
             <span className="text-sm text-muted-foreground">({product.reviewCount} reviews)</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xl font-bold">${product.price}</span>
+            <span className="text-xl font-bold">{formatCurrency(product.price)}</span>
             {product.originalPrice && (
-              <span className="text-sm text-muted-foreground line-through">${product.originalPrice}</span>
+              <span className="text-sm text-muted-foreground line-through">{formatCurrency(product.originalPrice)}</span>
             )}
           </div>
         </CardContent>

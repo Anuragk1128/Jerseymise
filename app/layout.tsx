@@ -12,13 +12,21 @@ export const metadata: Metadata = {
   generator: "v0.app",
 }
 
-// Global Montserrat for body text
-const montserrat = localFont({
+// Global Gotham for body text
+const gotham = localFont({
   src: [
-    { path: "../Montserrat/Montserrat-VariableFont_wght.ttf", weight: "100 900", style: "normal" },
-    { path: "../Montserrat/Montserrat-Italic-VariableFont_wght.ttf", weight: "100 900", style: "italic" },
+    // Normal styles (use OTFs with standard names)
+    { path: "../gotham/Gotham Fonts Family/Gotham-Light.otf", weight: "300", style: "normal" },
+    { path: "../gotham/Gotham Fonts Family/Gotham-Medium.otf", weight: "400", style: "normal" },
+    { path: "../gotham/Gotham Fonts Family/Gotham-Medium.otf", weight: "500", style: "normal" },
+    { path: "../gotham/Gotham Fonts Family/Gotham-Ultra.otf", weight: "700", style: "normal" },
+    // Italic styles
+    { path: "../gotham/Gotham Fonts Family/Gotham-LightItalic.otf", weight: "300", style: "italic" },
+    { path: "../gotham/Gotham Fonts Family/Gotham-MediumItalic.otf", weight: "400", style: "italic" },
+    { path: "../gotham/Gotham Fonts Family/Gotham-MediumItalic.otf", weight: "500", style: "italic" },
+    { path: "../gotham/Gotham Fonts Family/Gotham-UltraItalic.otf", weight: "700", style: "italic" },
   ],
-  variable: "--font-montserrat",
+  variable: "--font-gotham",
   display: "swap",
 })
 
@@ -28,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={montserrat.className}>
+    <html lang="en" className={gotham.className}>
       <head />
       
       <body>

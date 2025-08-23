@@ -5,6 +5,9 @@ import { FeaturedProducts } from "@/components/sections/FeaturedProducts"
 import { Categories } from "@/components/sections/Categories"
 import { FooterSection } from "@/components/sections/Footer"
 import Sale from "@/components/sale"
+import Media from "@/components/media"
+import BrandStory from "@/components/brand-story"
+import Newsletter from "@/components/newsletter"
 
 export default function HomePage() {
   return (
@@ -15,6 +18,9 @@ export default function HomePage() {
       <Features />
       <FeaturedProducts />
       <Categories />
+      <Media />
+      <BrandStory/>
+      <Newsletter/>
       <FooterSection />
     </div>
   )
