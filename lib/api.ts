@@ -27,6 +27,25 @@ export async function getCategories(brandSlug: string): Promise<ApiCategoryRespo
   }
 }
 
+// Public endpoint: fetch a single product by ID (no admin token required)
+export async function getPublicProductById(productId: string): Promise<{ data: any }> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/products/${productId}`, {
+      headers: { 'Accept': 'application/json' },
+      cache: 'no-store',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch product');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching public product:', error);
+    throw error;
+  }
+}
+
 export async function getSubcategories(brandSlug: string, categorySlug: string): Promise<ApiSubcategoryResponse> {
   try {
     const response = await fetch(
@@ -72,6 +91,31 @@ export async function getProductsByCategoryAndSubcategory(
   } catch (error) {
     console.error('Error fetching products:', error);
     return { data: [] };
+  }
+}
+
+// Fetch a single product by ID from the admin endpoint
+export async function getProductById(
+  brandSlug: string,
+  productId: string
+): Promise<{ data: any }> {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/admin/brands/${brandSlug}/products/${productId}`,
+      {
+        headers: defaultHeaders,
+        cache: 'no-store',
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch product');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching product:', error);
+    throw error;
   }
 }
 
