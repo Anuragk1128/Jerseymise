@@ -1,7 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
 import localFont from "next/font/local"
-import { CartProvider } from "@/lib/cart-context"
 import { AuthProvider } from "@/lib/auth-context"
 import { Toaster } from "@/components/ui/toaster"
 import "./globals.css"
@@ -41,10 +40,8 @@ export default function RootLayout({
       
       <body>
         <AuthProvider>
-          <CartProvider>
-            {children}
-            <Toaster />
-          </CartProvider>
+          {children}
+          <Toaster />
         </AuthProvider>
       </body>
     </html>

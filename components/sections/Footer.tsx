@@ -1,97 +1,72 @@
 import Link from "next/link"
 import Image from "next/image"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Facebook, Instagram,  } from "lucide-react"
 
 export function FooterSection() {
   return (
-    <footer className="bg-black text-white border-t border-white/10 py-12">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10 lg:gap-12">
+    <footer className="bg-white text-foreground border-t">
+      {/* CTA strip */}
+      <div className="bg-black text-white">
+        <div className="container mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
+          <h3 className="text-lg md:text-xl font-extrabold tracking-wide uppercase text-center md:text-left">
+            Become a Member & Get 10% Off
+          </h3>
+          <Button className="bg-white text-black hover:bg-white/90">JOIN US</Button>
+        </div>
+      </div>
+
+      {/* Links and newsletter */}
+      <div className="container mx-auto px-4 py-10">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="text-left">
-            <div className="flex items-center justify-start gap-3 mb-4 min-w-[120px]">
-              <Image src="/logo/JERSEYMISE_LOGO_BLACK_BG.svg" alt="Jerseymise mark" width={40} height={40} />
+            <h4 className="font-semibold mb-4">&nbsp;</h4>
+            <ul className="space-y-2">
+              <li><Link href="#" className="font-semibold hover:underline">STOCKIST</Link></li>
+              <li><Link href="#" className="font-semibold hover:underline">SEND US FEED BACK</Link></li>
+              <li><Link href="#" className="font-semibold hover:underline">SIZE GUIDE</Link></li>
+              <li><Link href="#" className="font-semibold hover:underline">CUSTOMISED TEAMWEAR</Link></li>
+            </ul>
+          </div>
+          <div className="text-left">
+            <h4 className="font-semibold mb-4">NEED HELP</h4>
+            <ul className="space-y-2 text-muted-foreground">
+              <li><Link href="#" className="hover:text-foreground">Order Status</Link></li>
+              <li><Link href="#" className="hover:text-foreground">Delivery & Returns</Link></li>
+              <li><Link href="#" className="hover:text-foreground">Payments Methods</Link></li>
+              <li><Link href="#" className="hover:text-foreground">Passion Points</Link></li>
+            </ul>
+          </div>
+          <div className="text-left">
+            <h4 className="font-semibold mb-4">ABOUT JERSEYMISE</h4>
+            <ul className="space-y-2 text-muted-foreground">
+              <li><Link href="#" className="hover:text-foreground">About Story</Link></li>
+              <li><Link href="#" className="hover:text-foreground">Careers</Link></li>
+              <li><Link href="#" className="hover:text-foreground">Catalogues</Link></li>
+            </ul>
+          </div>
+          <div className="text-left">
+            <h4 className="font-semibold mb-2">HEAR FROM US.</h4>
+            <p className="text-sm text-muted-foreground mb-4">Register today for latest email updates!</p>
+            <div className="flex gap-2 max-w-sm">
+              <Input placeholder="Email Address" className="bg-white" />
+              <Button>Subscribe</Button>
             </div>
-            <p className="text-gray-400 mb-4 max-w-md">
-              Premium sportswear and equipment for athletes who demand excellence.
-            </p>
-          </div>
-          <div className="text-left">
-            <h4 className="font-semibold mb-4">Shop</h4>
-            <ul className="space-y-2 text-gray-400">
-              <li>
-                <Link href="/products?category=men" className="hover:text-foreground">
-                  Men's
-                </Link>
-              </li>
-              <li>
-                <Link href="/products?category=women" className="hover:text-foreground">
-                  Women's
-                </Link>
-              </li>
-              <li>
-                <Link href="/products?category=equipment" className="hover:text-foreground">
-                  Equipment
-                </Link>
-              </li>
-              <li>
-                <Link href="/products" className="hover:text-foreground">
-                  All Products
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div className="text-left">
-            <h4 className="font-semibold mb-4">Support</h4>
-            <ul className="space-y-2 text-muted-foreground">
-              <li>
-                <Link href="/contact" className="hover:text-foreground">
-                  Contact Us
-                </Link>
-              </li>
-              <li>
-                <Link href="/shipping" className="hover:text-foreground">
-                  Shipping Info
-                </Link>
-              </li>
-              <li>
-                <Link href="/returns" className="hover:text-foreground">
-                  Returns
-                </Link>
-              </li>
-              <li>
-                <Link href="/size-guide" className="hover:text-foreground">
-                  Size Guide
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div className="text-left">
-            <h4 className="font-semibold mb-4">Company</h4>
-            <ul className="space-y-2 text-muted-foreground">
-              <li>
-                <Link href="/about" className="hover:text-foreground">
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link href="/careers" className="hover:text-foreground">
-                  Careers
-                </Link>
-              </li>
-              <li>
-                <Link href="/privacy" className="hover:text-foreground">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link href="/terms" className="hover:text-foreground">
-                  Terms of Service
-                </Link>
-              </li>
-            </ul>
           </div>
         </div>
-        <div className="border-t mt-8 pt-8 text-center text-muted-foreground">
-          <p>&copy; 2025 JERSEYMISE. All rights reserved.</p>
+
+        {/* Bottom row */}
+        <div className="mt-12 pt-8 border-t flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-3">
+            <Image src="/logo/JERSEYMISE_LOGO_BLACK_BG.svg" alt="Jerseymise mark" width={40} height={40} />
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="font-semibold tracking-wide">FOLLOW US</span>
+            <a aria-label="Facebook" href="#" className="text-muted-foreground hover:text-foreground"><Facebook className="h-5 w-5"/></a>
+            <a aria-label="Instagram" href="#" className="text-muted-foreground hover:text-foreground"><Instagram className="h-5 w-5"/></a>
+          
+          </div>
         </div>
       </div>
     </footer>

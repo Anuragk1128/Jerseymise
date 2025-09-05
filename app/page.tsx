@@ -1,26 +1,22 @@
 import { Header } from "@/components/header"
 import { Hero } from "@/components/sections/Hero"
-import { Features } from "@/components/sections/Features"
+import Intro from "@/components/sections/Intro"
+import NewestGear from "@/components/sections/NewestGear"
 import { FeaturedProducts } from "@/components/sections/FeaturedProducts"
-import { Categories } from "@/components/sections/Categories"
+import DualPromo from "@/components/sections/DualPromo"
+import Instagram from "@/components/sections/Instagram"
 import { FooterSection } from "@/components/sections/Footer"
-import Sale from "@/components/sale"
-import Media from "@/components/media"
-import BrandStory from "@/components/brand-story"
-import Newsletter from "@/components/newsletter"
 
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <Sale />
       <Hero />
-      <Features />
+      <Intro />
       <FeaturedProducts />
-      <Categories />
-      <Media />
-      <BrandStory/>
-      <Newsletter/>
+      <NewestGear />
+      <DualPromo />
+      <Instagram />
       <FooterSection />
     </div>
   )

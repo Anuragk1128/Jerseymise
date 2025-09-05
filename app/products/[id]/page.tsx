@@ -7,16 +7,12 @@ import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { useCart } from "@/lib/cart-context"
 import { products } from "@/lib/mock-data"
-import { Star, Heart, Truck, RotateCcw, Shield, Plus, Minus } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { Star, Truck, RotateCcw, Shield, Plus, Minus } from "lucide-react"
 import { formatCurrency } from "@/lib/utils"
 
 export default function ProductPage() {
   const params = useParams()
-  const { dispatch } = useCart()
-  const { toast } = useToast()
   const [selectedSize, setSelectedSize] = useState("")
   const [selectedColor, setSelectedColor] = useState("")
   const [selectedImage, setSelectedImage] = useState(0)
@@ -34,32 +30,6 @@ export default function ProductPage() {
         </div>
       </div>
     )
-  }
-
-  const addToCart = () => {
-    if (!selectedSize || !selectedColor) {
-      toast({
-        title: "Please select options",
-        description: "Please select both size and color before adding to cart.",
-        variant: "destructive",
-      })
-      return
-    }
-
-    dispatch({
-      type: "ADD_ITEM",
-      payload: {
-        product,
-        size: selectedSize,
-        color: selectedColor,
-        quantity,
-      },
-    })
-
-    toast({
-      title: "Added to cart",
-      description: `${product.name} has been added to your cart.`,
-    })
   }
 
   const discountPercentage = product.originalPrice
@@ -201,18 +171,11 @@ export default function ProductPage() {
               </div>
             </div>
 
-            {/* Add to Cart */}
-            <div className="flex gap-3">
-              <Button
-                className="flex-1"
-                size="lg"
-                onClick={addToCart}
-                disabled={!product.inStock || !selectedSize || !selectedColor}
-              >
-                Add to Cart - {formatCurrency(product.price * quantity)}
-              </Button>
-              <Button variant="outline" size="lg">
-                <Heart className="h-5 w-5" />
+            {/* Purchasing disabled notice */}
+            <div className="flex flex-col gap-2">
+              <div className="text-sm text-muted-foreground">Price: {formatCurrency(product.price * quantity)}</div>
+              <Button className="w-full" size="lg" disabled>
+                Shop Now
               </Button>
             </div>
 
@@ -222,7 +185,7 @@ export default function ProductPage() {
                 <Truck className="h-5 w-5 text-primary" />
                 <div>
                   <p className="font-medium text-sm">Free Shipping</p>
-                  <p className="text-xs text-muted-foreground">On orders over {formatCurrency(75)}</p>
+                  <p className="text-xs text-muted-foreground">On orders over {formatCurrency(600)}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">

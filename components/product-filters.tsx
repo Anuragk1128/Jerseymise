@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
-import { categories } from "@/lib/mock-data"
+import { getCategories } from "@/lib/api"
+import { Category } from "@/lib/types"
 
 interface ProductFiltersProps {
   onFiltersChange: (filters: FilterState) => void
@@ -20,12 +21,22 @@ export interface FilterState {
 }
 
 export function ProductFilters({ onFiltersChange }: ProductFiltersProps) {
+  const [categories, setCategories] = useState<Category[]>([]);
   const [filters, setFilters] = useState<FilterState>({
     categories: [],
     priceRange: [0, 500],
     inStockOnly: false,
     minRating: 0,
   })
+
+  useEffect(() => {
+    async function fetchCategories() {
+      const response = await getCategories("sportswear");
+      setCategories(response.data);
+    }
+
+    fetchCategories();
+  }, []);
 
   const updateFilters = (newFilters: Partial<FilterState>) => {
     const updatedFilters = { ...filters, ...newFilters }
@@ -58,18 +69,18 @@ export function ProductFilters({ onFiltersChange }: ProductFiltersProps) {
           <h4 className="font-medium mb-3">Categories</h4>
           <div className="space-y-2">
             {categories.map((category) => (
-              <div key={category.id} className="flex items-center space-x-2">
+              <div key={category._id} className="flex items-center space-x-2">
                 <Checkbox
-                  id={category.id}
-                  checked={filters.categories.includes(category.id)}
+                  id={category._id}
+                  checked={filters.categories.includes(category.slug)}
                   onCheckedChange={(checked) => {
                     const newCategories = checked
-                      ? [...filters.categories, category.id]
-                      : filters.categories.filter((c) => c !== category.id)
+                      ? [...filters.categories, category.slug]
+                      : filters.categories.filter((c) => c !== category.slug)
                     updateFilters({ categories: newCategories })
                   }}
                 />
-                <Label htmlFor={category.id} className="capitalize">
+                <Label htmlFor={category._id} className="capitalize">
                   {category.name}
                 </Label>
               </div>
