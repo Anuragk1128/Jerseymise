@@ -62,8 +62,8 @@ export default function ProductPage() {
           setProduct(pub.data)
         } catch (e1) {
           try {
-            // Try admin single-product endpoint
-            const response = await getProductById("sportswear", productId)
+            // Try public single-product endpoint
+            const response = await getProductById(productId)
             setProduct(response.data)
           } catch (e2) {
             // Fallback: page through products and find by id

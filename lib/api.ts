@@ -2,18 +2,15 @@ import { ApiCategoryResponse, ApiSubcategoryResponse, ApiProductResponse } from 
 
 const API_BASE_URL = 'https://hoe-be.onrender.com/api';
 
-// Admin token - in a real app, this should be stored securely and managed via auth context
-const ADMIN_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGI2ZGI5YTk3OWFkZjEyZTQ2ZjI3MzQiLCJyb2xlIjoiYWRtaW4iLCJlbWFpbCI6ImFkbWluQGhvdXNlb2Zldm9sdmUuaW4iLCJuYW1lIjoiQW51cmFnIiwiaWF0IjoxNzU3MDQ4MjIwLCJleHAiOjE3NTc2NTMwMjB9.rOgslF_1qB5stse0WeILXiZ3CiX7vCXAvEE8x35hN80';
-
 const defaultHeaders = {
   'Content-Type': 'application/json',
-  'Authorization': `Bearer ${ADMIN_TOKEN}`,
+  'Accept': 'application/json',
 };
 
 export async function getCategories(brandSlug: string): Promise<ApiCategoryResponse> {
   try {
     const response = await fetch(`${API_BASE_URL}/brands/${brandSlug}/categories`, {
-      headers: defaultHeaders
+      headers: { 'Accept': 'application/json' }
     });
     
     if (!response.ok) {
@@ -50,7 +47,7 @@ export async function getSubcategories(brandSlug: string, categorySlug: string):
   try {
     const response = await fetch(
       `${API_BASE_URL}/brands/${brandSlug}/categories/${categorySlug}/subcategories`,
-      { headers: defaultHeaders }
+      { headers: { 'Accept': 'application/json' } }
     );
     
     if (!response.ok) {
@@ -73,14 +70,14 @@ export async function getProductsByCategoryAndSubcategory(
   try {
     const { page = 1, limit = 20 } = options;
     const url = new URL(
-      `${API_BASE_URL}/admin/brands/${brandSlug}/categories/${categorySlug}/subcategories/${subcategorySlug}/products`
+      `${API_BASE_URL}/brands/${brandSlug}/categories/${categorySlug}/subcategories/${subcategorySlug}/products`
     );
     
     url.searchParams.append('page', page.toString());
     url.searchParams.append('limit', limit.toString());
 
     const response = await fetch(url.toString(), {
-      headers: defaultHeaders,
+      headers: { 'Accept': 'application/json' },
     });
     
     if (!response.ok) {
@@ -94,16 +91,15 @@ export async function getProductsByCategoryAndSubcategory(
   }
 }
 
-// Fetch a single product by ID from the admin endpoint
+// Fetch a single product by ID from the public endpoint
 export async function getProductById(
-  brandSlug: string,
   productId: string
-): Promise<{ data: any }> {
+): Promise<{ success: boolean; data: any }> {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/admin/brands/${brandSlug}/products/${productId}`,
+      `${API_BASE_URL}/products/${productId}`,
       {
-        headers: defaultHeaders,
+        headers: { 'Accept': 'application/json' },
         cache: 'no-store',
       }
     );
@@ -125,13 +121,13 @@ export async function getAllProducts(
 ): Promise<ApiProductResponse> {
   try {
     const { page = 1, limit = 20 } = options;
-    const url = new URL(`${API_BASE_URL}/admin/brands/${brandSlug}/products`);
+    const url = new URL(`${API_BASE_URL}/brands/${brandSlug}/products/all`);
     
     url.searchParams.append('page', page.toString());
     url.searchParams.append('limit', limit.toString());
 
     const response = await fetch(url.toString(), {
-      headers: defaultHeaders,
+      headers: { 'Accept': 'application/json' },
     });
     
     if (!response.ok) {
