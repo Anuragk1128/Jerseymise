@@ -6,7 +6,7 @@ export default function Instagram() {
       <div className="container mx-auto px-4 text-center">
         <h3 className="text-xl md:text-2xl font-extrabold tracking-wide">EXPLORE OUR INSTAGRAM</h3>
         <div className="mt-8 mx-auto relative w-56 h-56 md:w-64 md:h-64">
-          <Image src="/placeholder.svg?height=256&width=256&text=IG%20QR" alt="Instagram QR" fill className="object-contain" />
+          <Image src="/scanner_.png" alt="Instagram QR" fill className="object-contain" />
         </div>
         <p className="mt-3 text-sm text-muted-foreground">@JERSEYMISE</p>
       </div>

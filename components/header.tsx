@@ -54,7 +54,7 @@ export function Header() {
           <div className="flex md:hidden w-full items-center justify-between">
             <Link href="/" className="flex items-center gap-2 min-w-[100px] py-2" aria-label="Jerseymise Home">
               <Image src="/logo/JERSEYMISE_LOGO_WHITE_BG.svg" alt="Jerseymise mark" width={36} height={36} priority />
-              <span className="font-bold tracking-wide">JERSEYMISE</span>
+              <span className="font-bold tracking-wide"></span>
             </Link>
             <Sheet>
               <SheetTrigger asChild>
@@ -99,7 +99,11 @@ export function Header() {
             <span className="text-muted-foreground/40">|</span>
             <Link href="/join-us" className="hover:text-foreground transition-colors">Join us</Link>
             <span className="text-muted-foreground/40">|</span>
-            <Link href="/login" className="hover:text-foreground transition-colors">Login</Link>
+            {!isLoading && !isAuthenticated ? (
+              
+              <AuthDialog />
+              
+            ) : null}
           </nav>
         </div>
       </div>

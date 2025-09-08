@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 import { Header } from "@/components/header"
+import { FooterSection } from "@/components/sections/Footer"
 import { ProductCard } from "@/components/product-card"
 import { ProductFilters, type FilterState } from "@/components/product-filters"
 import { Button } from "@/components/ui/button"
@@ -261,6 +262,7 @@ export default function ProductsPage() {
           </div>
         </div>
       </main>
+      <FooterSection/>
     </div>
   )
 }

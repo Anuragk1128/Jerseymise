@@ -3,6 +3,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { Header } from "@/components/header"
+import { FooterSection } from "@/components/sections/Footer"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -62,6 +63,7 @@ export default function CataloguePage() {
           ))}
         </div>
       </div>
+      <FooterSection/>
     </div>
   )
 }

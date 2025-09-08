@@ -1,6 +1,8 @@
 import { getCategories, getSubcategories } from "@/lib/api"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
+import { Header } from "@/components/header"
+import { FooterSection } from "@/components/sections/Footer"
 import { Button } from "@/components/ui/button"
 import { ChevronRight } from "lucide-react"
 
@@ -9,6 +11,7 @@ export default async function CollectionsPage() {
 
   return (
     <div className="container py-8 md:py-12">
+      <Header/>
       <div className="space-y-8">
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Our Collections</h1>
@@ -60,6 +63,7 @@ export default async function CollectionsPage() {
           })}
         </div>
       </div>
+      <FooterSection/>
     </div>
   )
 }
