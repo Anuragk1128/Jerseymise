@@ -32,8 +32,7 @@ export function FooterSection() {
           <div className="text-left">
             <h4 className="font-semibold mb-4">NEED HELP</h4>
             <ul className="space-y-2 text-muted-foreground">
-              <li><Link href="#" className="hover:text-foreground">Order Status</Link></li>
-              <li><Link href="#" className="hover:text-foreground">Delivery & Returns</Link></li>
+              <li><Link href="/return" className="hover:text-foreground">Delivery & Returns</Link></li>
               <li><Link href="#" className="hover:text-foreground">Payments Methods</Link></li>
               <li><Link href="#" className="hover:text-foreground">Passion Points</Link></li>
             </ul>
@@ -41,9 +40,9 @@ export function FooterSection() {
           <div className="text-left">
             <h4 className="font-semibold mb-4">ABOUT JERSEYMISE</h4>
             <ul className="space-y-2 text-muted-foreground">
-              <li><Link href="#" className="hover:text-foreground">About Story</Link></li>
+              <li><Link href="/story" className="hover:text-foreground">About Story</Link></li>
               <li><Link href="#" className="hover:text-foreground">Careers</Link></li>
-              <li><Link href="#" className="hover:text-foreground">Catalogues</Link></li>
+              <li><Link href="/catalogue" className="hover:text-foreground">Catalogues</Link></li>
             </ul>
           </div>
           <div className="text-left">
@@ -64,7 +63,7 @@ export function FooterSection() {
           <div className="flex items-center gap-4">
             <span className="font-semibold tracking-wide">FOLLOW US</span>
             <a aria-label="Facebook" href="#" className="text-muted-foreground hover:text-foreground"><Facebook className="h-5 w-5"/></a>
-            <a aria-label="Instagram" href="#" className="text-muted-foreground hover:text-foreground"><Instagram className="h-5 w-5"/></a>
+            <a aria-label="Instagram" href="https://www.instagram.com/jerseymise?igsh=MW9sa2x5cHZ6MG9rOA==" className="text-muted-foreground hover:text-foreground" target="_blank"><Instagram className="h-5 w-5"/></a>
           
           </div>
         </div>
