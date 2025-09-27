@@ -1,13 +1,13 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Image from "next/image"
 import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Star, Truck, RotateCcw, Shield, Plus, Minus } from "lucide-react"
+import { Star, Truck, RotateCcw, Shield, Plus, Minus, ChevronLeft, ChevronRight } from "lucide-react"
 import { formatCurrency } from "@/lib/utils"
 import { getAllProducts, getProductById, getPublicProductById } from "@/lib/api"
 import type { Product } from "@/lib/types"
@@ -23,6 +23,59 @@ export default function ProductPage() {
   const [product, setProduct] = useState<Product | null>(null)
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([])
   const [error, setError] = useState<string | null>(null)
+
+  // Navigation functions - defined early to maintain hook order
+  const goToPreviousImage = useCallback(() => {
+    setSelectedImage(prev => {
+      if (!product) return prev
+      const productImages = product.images && product.images.length > 0 
+        ? product.images 
+        : (product as any)?.image 
+          ? [(product as any).image]
+          : ['/placeholder.svg']
+      if (productImages.length <= 1) return prev
+      return prev === 0 ? productImages.length - 1 : prev - 1
+    })
+  }, [product])
+
+  const goToNextImage = useCallback(() => {
+    setSelectedImage(prev => {
+      if (!product) return prev
+      const productImages = product.images && product.images.length > 0 
+        ? product.images 
+        : (product as any)?.image 
+          ? [(product as any).image]
+          : ['/placeholder.svg']
+      if (productImages.length <= 1) return prev
+      return prev === productImages.length - 1 ? 0 : prev + 1
+    })
+  }, [product])
+
+  // Keyboard navigation support
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!product) return
+      
+      const productImages = product.images && product.images.length > 0 
+        ? product.images 
+        : (product as any)?.image 
+          ? [(product as any).image]
+          : ['/placeholder.svg']
+          
+      if (productImages.length <= 1) return
+      
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault()
+        goToPreviousImage()
+      } else if (event.key === 'ArrowRight') {
+        event.preventDefault()
+        goToNextImage()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [product, goToPreviousImage, goToNextImage])
 
   // Fetch related products when product changes
   useEffect(() => {
@@ -72,7 +125,7 @@ export default function ProductPage() {
             let found: any = null
             while (!found) {
               const res = await getAllProducts("sportswear", { page, limit })
-              found = res.data.find((p: any) => (p._id === productId) || (p.id === productId)) || null
+              found = res.data.find((p: any) => p._id === productId) || null
               const totalPages = res.pagination?.totalPages || 1
               if (found || page >= totalPages) break
               page += 1
@@ -150,12 +203,13 @@ export default function ProductPage() {
     : p.image 
       ? [p.image]
       : ['/placeholder.svg']
-  const externalShopUrl = `https://hoe-fe.vercel.app/products/${product._id}`
+  const externalShopUrl = `https://houseofevolve.in/products/${product._id}`
   
   const handleShopNow = () => {
     // In the future, we can add authentication token here
     window.open(externalShopUrl, '_blank', 'noopener,noreferrer');
   }
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -165,7 +219,7 @@ export default function ProductPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Product Images */}
           <div className="space-y-4">
-            <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-50">
+            <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-50 group">
               <Image
                 src={productImages[selectedImage]}
                 alt={product.title}
@@ -176,14 +230,45 @@ export default function ProductPage() {
               {discountPercentage > 0 && (
                 <Badge className="absolute top-4 left-4 bg-red-500 hover:bg-red-600">-{discountPercentage}%</Badge>
               )}
+              
+              {/* Navigation buttons - only show if there are multiple images */}
+              {productImages.length > 1 && (
+                <>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 hover:bg-white shadow-lg"
+                    onClick={goToPreviousImage}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 hover:bg-white shadow-lg"
+                    onClick={goToNextImage}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </>
+              )}
+              
+              {/* Image counter */}
+              {productImages.length > 1 && (
+                <div className="absolute bottom-4 right-4 bg-black/50 text-white px-2 py-1 rounded-md text-sm">
+                  {selectedImage + 1} / {productImages.length}
+                </div>
+              )}
             </div>
-            <div className="flex gap-2 overflow-x-auto">
+            <div className="flex gap-2 overflow-x-auto pb-2">
               {productImages.map((img, i) => (
                 <button
                   key={i}
                   onClick={() => setSelectedImage(i)}
-                  className={`relative aspect-square overflow-hidden rounded-md border-2 transition-all ${
-                    selectedImage === i ? "border-primary" : "border-transparent"
+                  className={`relative aspect-square overflow-hidden rounded-md border-2 transition-all min-w-[80px] hover:scale-105 ${
+                    selectedImage === i 
+                      ? "border-primary shadow-md" 
+                      : "border-gray-200 hover:border-gray-300"
                   }`}
                 >
                   <Image
@@ -382,7 +467,7 @@ export default function ProductPage() {
                   : (relatedProduct as any)?.image ?? '/placeholder.svg';
 
                 return (
-                  <div key={relatedProduct._id || relatedProduct.id} className="group overflow-hidden border-0 shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer">
+                  <div key={relatedProduct._id} className="group overflow-hidden border-0 shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer">
                     <div className="relative aspect-square overflow-hidden bg-gray-50">
                       <Image
                         src={imageUrl}
