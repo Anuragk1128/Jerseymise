@@ -17,7 +17,7 @@ export function Hero() {
       <div className="relative z-20 w-full flex flex-col-reverse md:flex-row items-center md:items-start justify-between max-w-6xl mx-auto px-6 md:px-8">
         {/* CTAs left/center on small screens */}
         <div className="mt-8 md:mt-0 w-full md:w-auto flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-          <Link href="https://hoe-fe.vercel.app/" target="_blank" rel="noopener noreferrer">
+          <Link href="https://houseofevolve.in/" target="_blank" rel="noopener noreferrer">
           <Button size="lg" className="text-lg px-8 py-6">
             
             Shop Now
