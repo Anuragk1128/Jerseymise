@@ -35,7 +35,7 @@ export function Hero() {
           </Link>
         </div>
         {/* Right aligned heading */}
-        <h1 className="text-white text-right md:text-right text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-wide md:max-w-md">
+        <h1 className="text-white text-right md:text-right text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-wide md:max-w-md font-gotham">
           SUMMER
           <br />
           ATHLEISURE

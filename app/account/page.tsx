@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useAuth } from "@/lib/auth-context"
-import { Package, Heart, Settings, MapPin, CreditCard,User as UserIcon } from "lucide-react"
+import { Package, Heart, Settings, MapPin, CreditCard,User as UserIcon, Link } from "lucide-react"
 import { getUserProfile } from "@/lib/api"
 import { User } from "@/lib/auth-context"
 
@@ -130,7 +130,8 @@ export default function AccountPage() {
                         <h3 className="font-semibold">Profile</h3>
                         <p className="text-sm text-muted-foreground">Name : {userProfile?.name || user?.name}</p>
                         <p className="text-sm text-muted-foreground">Email : {userProfile?.email || user?.email}</p>
-                       
+                        
+                        
                       </div>
                     </div>
                   </CardContent>

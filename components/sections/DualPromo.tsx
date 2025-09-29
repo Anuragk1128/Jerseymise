@@ -10,7 +10,7 @@ export default function DualPromo() {
           <div className="relative w-full h-48 md:h-60 lg:h-72 bg-white border rounded-md overflow-hidden">
             <div className="absolute inset-0 flex items-center justify-between px-6">
               <div className="text-left">
-                <h3 className="text-2xl md:text-3xl font-extrabold">CUSTOMISE YOUR
+                <h3 className="text-2xl md:text-3xl font-extrabold font-gotham">CUSTOMISE YOUR
                   <br />TEAMWEAR</h3>
                 <p className="mt-3 text-sm text-muted-foreground">Explore Now</p>
               </div>
@@ -25,7 +25,7 @@ export default function DualPromo() {
           <div className="relative w-full h-48 md:h-60 lg:h-72 bg-white border rounded-md overflow-hidden">
             <div className="absolute inset-0 flex items-center justify-between px-6">
               <div className="text-left">
-                <h3 className="text-2xl md:text-3xl font-extrabold">EXPLORE OUR
+                <h3 className="text-2xl md:text-3xl font-extrabold font-gotham">EXPLORE OUR
                   <br />CATALOGUES</h3>
                 <p className="mt-3 text-sm text-muted-foreground">Know More</p>
               </div>

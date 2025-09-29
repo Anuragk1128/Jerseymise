@@ -11,7 +11,7 @@ export function Features() {
             </div>
             <div>
               <h3 className="font-semibold text-lg">Free Shipping</h3>
-              <p className="text-muted-foreground">On orders over $75</p>
+              <p className="text-muted-foreground">On Orders Over ₹ 599</p>
             </div>
           </div>
           <div className="flex items-center space-x-4">
@@ -20,7 +20,7 @@ export function Features() {
             </div>
             <div>
               <h3 className="font-semibold text-lg">Quality Guarantee</h3>
-              <p className="text-muted-foreground">Premium materials only</p>
+              <p className="text-muted-foreground">Premium Materials Only</p>
             </div>
           </div>
           <div className="flex items-center space-x-4">
@@ -29,7 +29,7 @@ export function Features() {
             </div>
             <div>
               <h3 className="font-semibold text-lg">Easy Returns</h3>
-              <p className="text-muted-foreground">30-day return policy</p>
+              <p className="text-muted-foreground">7 days return policy</p>
             </div>
           </div>
         </div>

@@ -23,7 +23,7 @@ export function Categories() {
     <section className="py-16 bg-muted/30">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Shop by Category</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 font-gotham">Shop by Category</h2>
           <p className="text-lg text-muted-foreground">Find exactly what you need for your fitness journey</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

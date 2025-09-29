@@ -32,7 +32,7 @@ export default function Newsletter() {
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-3xl rounded-2xl border border-black/10 bg-white p-6 sm:p-8 shadow-sm">
           <div className="text-center">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Join our newsletter</h2>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight font-gotham">Join our newsletter</h2>
             <p className="mt-2 text-sm text-muted-foreground">
               Be the first to know about new drops, exclusive offers, and behind‑the‑scenes stories.
             </p>

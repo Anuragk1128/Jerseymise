@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Image from "next/image"
 import { Header } from "@/components/header"
+import { FooterSection } from "@/components/sections/Footer"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -370,7 +371,7 @@ export default function ProductPage() {
                 <RotateCcw className="h-5 w-5 text-primary" />
                 <div>
                   <p className="font-medium text-sm">Easy Returns</p>
-                  <p className="text-xs text-muted-foreground">30-day policy</p>
+                  <p className="text-xs text-muted-foreground">7 days return policy</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -503,6 +504,7 @@ export default function ProductPage() {
           )}
         </div>
       </div>
+      <FooterSection/>
     </div>
   )
 }

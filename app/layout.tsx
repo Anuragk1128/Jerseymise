@@ -35,7 +35,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={gotham.className}>
+    <html lang="en" className={`${gotham.className} ${gotham.variable}`}>
       <head />
       
       <body>

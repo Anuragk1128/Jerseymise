@@ -14,11 +14,11 @@ export default function BrandStory() {
           {/* Copy */}
           <div>
             <p className="text-xs tracking-widest text-muted-foreground mb-3">OUR JOURNEY</p>
-            <h2 className="text-3xl md:text-5xl font-bold leading-tight">
+            <h2 className="text-3xl md:text-5xl font-bold leading-tight font-gotham">
               Built for performance. Designed for passion.
             </h2>
             <p className="mt-4 text-muted-foreground">
-              Jerseymise was born from a simple belief: athletes deserve kit that works as hard as they do. From
+              Jerseymise was born from a simple belief: Athletes deserve kit that works as hard as they do. From
               breathable fabrics to precision fits, every detail is crafted to elevate your game—on and off the field.
             </p>
 

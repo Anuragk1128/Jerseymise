@@ -121,3 +121,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .font-gotham {
+    font-family: var(--font-gotham), ui-sans-serif, system-ui, sans-serif;
+  }
+}
