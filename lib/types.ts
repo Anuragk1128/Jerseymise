@@ -51,3 +51,30 @@ export interface ApiResponse<T> {
 export type ApiCategoryResponse = ApiResponse<Category>;
 export type ApiSubcategoryResponse = ApiResponse<Subcategory>;
 export type ApiProductResponse = ApiResponse<Product>;
+
+// Auth types
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  name: string;
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+  };
+}
+
+export interface AuthErrorResponse {
+  message?: string;
+  error?: string;
+}

@@ -164,11 +164,7 @@ export function AuthDialog() {
                 )}
               </Button>
             </form>
-            <div className="text-center text-sm text-muted-foreground">
-              <p>Demo credentials:</p>
-              <p>Customer: john@example.com / password123</p>
-              <p>Admin: admin@fitgear.com / admin123</p>
-            </div>
+          
           </TabsContent>
 
           <TabsContent value="register" className="space-y-4">

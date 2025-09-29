@@ -1,4 +1,5 @@
-import { ApiCategoryResponse, ApiSubcategoryResponse, ApiProductResponse } from './types';
+import { ApiCategoryResponse, ApiSubcategoryResponse, ApiProductResponse, RegisterRequest, LoginRequest, AuthResponse, AuthErrorResponse } from './types';
+import { User } from './auth-context';
 
 const API_BASE_URL = 'https://hoe-be.onrender.com/api';
 
@@ -21,6 +22,23 @@ export async function getCategories(brandSlug: string): Promise<ApiCategoryRespo
   } catch (error) {
     console.error('Error fetching categories:', error);
     return { data: [] };
+  }
+}
+export async function getUserProfile(token?: string): Promise<{ success: boolean; data?: User; error?: string }> {
+  try {
+    const headers: Record<string, string> = { 'Accept': 'application/json' };
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+    
+    const response = await fetch(`${API_BASE_URL}/users/me`, { headers });
+    if (!response.ok) {
+      throw new Error('Failed to fetch user profile');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    throw error;
   }
 }
 
@@ -138,5 +156,66 @@ export async function getAllProducts(
   } catch (error) {
     console.error('Error fetching products:', error);
     return { data: [] };
+  }
+}
+
+// Auth API functions
+export async function registerUser(data: RegisterRequest): Promise<{ success: boolean; data?: AuthResponse; error?: string }> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      method: 'POST',
+      headers: defaultHeaders,
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorData: AuthErrorResponse = await response.json();
+      return {
+        success: false,
+        error: errorData.message || errorData.error || 'Registration failed'
+      };
+    }
+
+    const authData: AuthResponse = await response.json();
+    return {
+      success: true,
+      data: authData
+    };
+  } catch (error) {
+    console.error('Error registering user:', error);
+    return {
+      success: false,
+      error: 'Network error. Please try again.'
+    };
+  }
+}
+
+export async function loginUser(data: LoginRequest): Promise<{ success: boolean; data?: AuthResponse; error?: string }> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: defaultHeaders,
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorData: AuthErrorResponse = await response.json();
+      return {
+        success: false,
+        error: errorData.message || errorData.error || 'Login failed'
+      };
+    }
+
+    const authData: AuthResponse = await response.json();
+    return {
+      success: true,
+      data: authData
+    };
+  } catch (error) {
+    console.error('Error logging in user:', error);
+    return {
+      success: false,
+      error: 'Network error. Please try again.'
+    };
   }
 }

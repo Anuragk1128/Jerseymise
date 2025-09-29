@@ -65,7 +65,7 @@ export function Header() {
               <SheetContent side="right" className="w-80">
                 <div className="flex flex-col space-y-4 mt-8">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-14 w-4 text-muted-foreground" />
                     <Input placeholder="Search For The Product" className="pl-10" />
                   </div>
                   <nav className="flex flex-col space-y-4">
@@ -81,7 +81,7 @@ export function Header() {
                       Wishlist
                     </Button>
                     {!isLoading && !isAuthenticated && (
-                      <div className="pt-2">
+                      <div className="pt-4">
                         <AuthDialog />
                       </div>
                     )}
@@ -92,18 +92,14 @@ export function Header() {
           </div>
 
           {/* Desktop links right aligned */}
-          <nav className="hidden md:flex items-center gap-6 text-xs text-muted-foreground ml-auto">
-            <Link href="/find-us" className="hover:text-foreground transition-colors">Find us</Link>
+          <nav className="md:flex items-center gap-6 text-xs text-primary ml-auto">
+            <Link href="/find-us" className="hover:text-foreground transition-colors">Find Us</Link>
             <span className="text-muted-foreground/40">|</span>
             <Link href="/help" className="hover:text-foreground transition-colors">Help</Link>
             <span className="text-muted-foreground/40">|</span>
-            <Link href="/join-us" className="hover:text-foreground transition-colors">Join us</Link>
+            <Link href="/join-us" className="hover:text-foreground transition-colors">Join Us</Link>
             <span className="text-muted-foreground/40">|</span>
-            {!isLoading && !isAuthenticated ? (
-              
-              <AuthDialog />
-              
-            ) : null}
+         
           </nav>
         </div>
       </div>
@@ -157,7 +153,7 @@ export function Header() {
           </nav>
 
           {/* Search */}
-          <div className="flex-1 max-w-lg mx-4">
+          <div className="flex-1 max-w-lg mx-10">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input placeholder="Search For The Product" className="pl-10" />
@@ -184,7 +180,7 @@ export function Header() {
 
       {/* promo strip */}
       <div className="bg-black text-white text-center text-sm py-2">
-        Easy Return Within 4 Days
+        Easy Return Within 7 Days
       </div>
     </header>
   )

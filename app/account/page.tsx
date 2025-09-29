@@ -1,30 +1,61 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Header } from "@/components/header"
+import { FooterSection } from "@/components/sections/Footer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useAuth } from "@/lib/auth-context"
-import { Package, Heart, Settings, MapPin, CreditCard } from "lucide-react"
+import { Package, Heart, Settings, MapPin, CreditCard,User as UserIcon } from "lucide-react"
+import { getUserProfile } from "@/lib/api"
+import { User } from "@/lib/auth-context"
 
 export default function AccountPage() {
-  const { user, isAuthenticated, isLoading } = useAuth()
+  const { user, isAuthenticated, isLoading, token } = useAuth()
   const router = useRouter()
+  const [userProfile, setUserProfile] = useState<User | null>(null)
+  const [profileLoading, setProfileLoading] = useState(true)
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       router.push("/")
+      return
     }
-  }, [isAuthenticated, isLoading, router])
 
-  if (isLoading) {
+    if (isAuthenticated && token) {
+      fetchUserProfile()
+    }
+  }, [isAuthenticated, isLoading, router, token])
+
+  const fetchUserProfile = async () => {
+    try {
+      setProfileLoading(true)
+      const response = await getUserProfile(token || undefined)
+      
+      if (response.success && response.data) {
+        setUserProfile(response.data)
+      } else {
+        // Fall Back to auth context user if API fails
+        setUserProfile(user)
+      }
+    } catch (error) {
+      console.error('Error fetching user profile:', error)
+      // Fall back to auth context user
+      setUserProfile(user)
+    } finally {
+      setProfileLoading(false)
+    }
+  }
+
+  if (isLoading || profileLoading) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
         <div className="container mx-auto px-4 py-16 text-center">
-          <p>Loading...</p>
+          <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p>Loading your account...</p>
         </div>
       </div>
     )
@@ -51,18 +82,16 @@ export default function AccountPage() {
               <CardHeader className="text-center">
                 <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl font-bold text-primary-foreground">
-                    {user.name
+                    {(userProfile?.name || user?.name || '')
                       .split(" ")
                       .map((n) => n[0])
                       .join("")
                       .toUpperCase()}
                   </span>
                 </div>
-                <CardTitle className="text-xl">{user.name}</CardTitle>
-                <p className="text-muted-foreground">{user.email}</p>
-                <Badge variant={user.role === "admin" ? "default" : "secondary"} className="mt-2">
-                  {user.role === "admin" ? "Administrator" : "Customer"}
-                </Badge>
+                <CardTitle className="text-xl">{userProfile?.name || user?.name}</CardTitle>
+                
+               
               </CardHeader>
               <CardContent>
                 <Button variant="outline" className="w-full bg-transparent">
@@ -75,19 +104,7 @@ export default function AccountPage() {
             {/* Quick Actions */}
             <div className="md:col-span-2 space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Card className="hover:shadow-md transition-shadow cursor-pointer">
-                  <CardContent className="p-6">
-                    <div className="flex items-center space-x-4">
-                      <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <Package className="h-6 w-6 text-blue-600" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold">Orders</h3>
-                        <p className="text-sm text-muted-foreground">View order history</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+               
 
                 <Card className="hover:shadow-md transition-shadow cursor-pointer">
                   <CardContent className="p-6">
@@ -103,52 +120,32 @@ export default function AccountPage() {
                   </CardContent>
                 </Card>
 
-                <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                <Card className="hover:shadow-md transition-shadow ">
                   <CardContent className="p-6">
                     <div className="flex items-center space-x-4">
                       <div className="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center">
-                        <MapPin className="h-6 w-6 text-green-600" />
+                        <UserIcon className="h-6 w-6 text-green-600" />
                       </div>
                       <div>
-                        <h3 className="font-semibold">Addresses</h3>
-                        <p className="text-sm text-muted-foreground">Manage addresses</p>
+                        <h3 className="font-semibold">Profile</h3>
+                        <p className="text-sm text-muted-foreground">Name : {userProfile?.name || user?.name}</p>
+                        <p className="text-sm text-muted-foreground">Email : {userProfile?.email || user?.email}</p>
+                       
                       </div>
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card className="hover:shadow-md transition-shadow cursor-pointer">
-                  <CardContent className="p-6">
-                    <div className="flex items-center space-x-4">
-                      <div className="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <CreditCard className="h-6 w-6 text-purple-600" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold">Payment Methods</h3>
-                        <p className="text-sm text-muted-foreground">Manage cards</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+              
               </div>
 
               {/* Recent Orders */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Recent Orders</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>No orders yet</p>
-                    <p className="text-sm">Your order history will appear here</p>
-                  </div>
-                </CardContent>
-              </Card>
+            
             </div>
           </div>
         </div>
       </div>
+      <FooterSection />
     </div>
   )
 }
