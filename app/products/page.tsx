@@ -65,6 +65,11 @@ export default function ProductsPage() {
 
   const filteredAndSortedProducts = useMemo(() => {
     const filtered = products.filter((product) => {
+      // Filter out archived products
+      if (product.status === 'archived') {
+        return false
+      }
+
       const productCategorySlug = getSlug(product.categoryId)
       const productSubcategorySlug = getSlug(product.subcategoryId)
 
@@ -219,29 +224,9 @@ export default function ProductsPage() {
           <div className="flex-1">
             {filteredAndSortedProducts.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {filteredAndSortedProducts.map((product) => {
-                  const categorySlug = getSlug(product.categoryId)
-                  const subcategorySlug = getSlug(product.subcategoryId)
-                  return (
-                    <ProductCard key={product._id} product={{
-                      id: product._id,
-                      name: product.title,
-                      price: product.price,
-                      originalPrice: product.compareAtPrice,
-                      image: product.images[0] || "/placeholder.svg",
-                      images: product.images,
-                      category: categorySlug,
-                      subcategory: subcategorySlug,
-                      description: product.description,
-                      inStock: product.stock > 0,
-                      rating: 4.5, // Default rating since not in API
-                      reviewCount: 0,
-                      features: [], // Not in API
-                      sizes: product.attributes?.size || [],
-                      colors: product.attributes?.color || [],
-                    }} />
-                  )
-                })}
+                {filteredAndSortedProducts.map((product) => (
+                  <ProductCard key={product._id} product={product} />
+                ))}
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-12 text-center">

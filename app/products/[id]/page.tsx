@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Star, Truck, RotateCcw, Shield, Plus, Minus, ChevronLeft, ChevronRight } from "lucide-react"
-import { formatCurrency } from "@/lib/utils"
+import { formatCurrency, formatCurrencyWithGST } from "@/lib/utils"
 import { getAllProducts, getProductById, getPublicProductById } from "@/lib/api"
 import type { Product } from "@/lib/types"
 
@@ -89,7 +89,8 @@ export default function ProductPage() {
         const related = response.data.filter(
           (p: any) => 
             p._id !== product._id && 
-            p.categoryId === product.categoryId
+            p.categoryId === product.categoryId &&
+            p.status !== 'archived'
         );
         setRelatedProducts(related.slice(0, 4));
       } catch (error) {
@@ -304,7 +305,10 @@ export default function ProductPage() {
                 )}
               </div>
               <div className="flex items-center gap-3 mb-6">
-                <span className="text-3xl font-bold">{formatCurrency(product.price)}</span>
+                <div className="flex flex-col">
+                  <span className="text-3xl font-bold">{formatCurrencyWithGST((product as any).priceIncludingTax || product.price)}</span>
+                  <span className="text-sm text-muted-foreground">Incl. GST</span>
+                </div>
                 {product.compareAtPrice && product.compareAtPrice > product.price && (
                   <span className="text-xl text-muted-foreground line-through">{formatCurrency(product.compareAtPrice)}</span>
                 )}
@@ -487,7 +491,10 @@ export default function ProductPage() {
                         {relatedProduct.title}
                       </h3>
                       <div className="flex items-center gap-2">
-                        <span className="text-lg font-bold">{formatCurrency(relatedProduct.price)}</span>
+                        <div className="flex flex-col">
+                          <span className="text-lg font-bold">{formatCurrencyWithGST((relatedProduct as any).priceIncludingTax || relatedProduct.price)}</span>
+                          <span className="text-xs text-muted-foreground">Incl. GST</span>
+                        </div>
                         {relatedProduct.compareAtPrice && relatedProduct.compareAtPrice > relatedProduct.price && (
                           <span className="text-sm text-muted-foreground line-through">
                             {formatCurrency(relatedProduct.compareAtPrice)}

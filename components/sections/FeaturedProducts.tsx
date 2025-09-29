@@ -18,7 +18,8 @@ export function FeaturedProducts() {
       try {
         setLoading(true)
         const res = await getAllProducts("sportswear", { limit: 12 })
-        setFeaturedProducts(res.data.slice(0, 4))
+        const activeProducts = res.data.filter((p: any) => p.status !== 'archived')
+        setFeaturedProducts(activeProducts.slice(0, 4))
       } catch (e) {
         console.error(e)
         setError("Failed to load featured products")
@@ -57,23 +58,7 @@ export function FeaturedProducts() {
             {featuredProducts.map((p) => (
               <ProductCard
                 key={p._id}
-                product={{
-                  id: p._id,
-                  name: p.title,
-                  price: p.price,
-                  originalPrice: p.compareAtPrice,
-                  image: (p.images && p.images[0]) || "/placeholder.svg",
-                  images: p.images || [],
-                  category: typeof p.categoryId === 'string' ? p.categoryId : (p.categoryId?.slug || ''),
-                  subcategory: typeof p.subcategoryId === 'string' ? p.subcategoryId : (p.subcategoryId?.slug || ''),
-                  description: p.description,
-                  inStock: (p.stock || 0) > 0,
-                  rating: 4.5,
-                  reviewCount: 0,
-                  features: [],
-                  sizes: p.attributes?.size || [],
-                  colors: p.attributes?.color || [],
-                }}
+                product={p}
               />
             ))}
           </div>

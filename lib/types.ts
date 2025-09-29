@@ -16,10 +16,15 @@ export interface Product {
   images: string[];
   price: number;
   compareAtPrice?: number;
+  priceIncludingTax: number;
+  taxAmount: number;
+  gstRate: number;
   stock: number;
   status: 'active' | 'draft' | 'archived';
   tags: string[];
   attributes: ProductAttributes;
+  rating?: number;
+  numReviews?: number;
   createdAt: string;
   updatedAt: string;
 }

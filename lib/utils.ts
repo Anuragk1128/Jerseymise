@@ -17,3 +17,8 @@ export function formatCurrency(amount: number) {
     return `₹${amount.toFixed(2)}`
   }
 }
+
+// GST utilities - using backend calculated values
+export function formatCurrencyWithGST(priceIncludingTax: number): string {
+  return formatCurrency(priceIncludingTax)
+}
