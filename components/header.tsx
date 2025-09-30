@@ -163,9 +163,11 @@ export function Header() {
           {/* Right: Profile / Wishlist */}
           <div className="flex items-center gap-2 ml-auto">
             {!isLoading && (isAuthenticated ? <UserMenu /> : <AuthDialog />)}
+            <Link href="/wishlist">
             <Button variant="ghost" size="icon">
               <Heart className="h-5 w-5" />
             </Button>
+            </Link>
           </div>
         </div>
 

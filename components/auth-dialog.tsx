@@ -1,7 +1,8 @@
 "use client"
 
 import type React from "react"
-
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import GoogleLoginButton from "./google"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -164,6 +165,23 @@ export function AuthDialog() {
                 )}
               </Button>
             </form>
+            <div className="mt-4">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">
+                    Or continue with
+                  </span>
+                </div>
+              </div>
+              <div className="mt-6">
+                <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
+                  <GoogleLoginButton />
+                </GoogleOAuthProvider>
+              </div>
+            </div>
           
           </TabsContent>
 
@@ -226,6 +244,7 @@ export function AuthDialog() {
             </form>
           </TabsContent>
         </Tabs>
+        
       </DialogContent>
     </Dialog>
   )

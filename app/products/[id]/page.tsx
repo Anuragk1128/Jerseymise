@@ -10,10 +10,11 @@ import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Star, Truck, RotateCcw, Shield, Plus,Share2 ,Heart, ChevronLeft, ChevronRight } from "lucide-react"
 import { formatCurrency, formatCurrencyWithGST } from "@/lib/utils"
-import { getAllProducts, getProductById, getPublicProductById } from "@/lib/api"
+import { getAllProducts, getProductById, getPublicProductById, addToWishlist } from "@/lib/api"
 import type { Product } from "@/lib/types"
 import {ProductFilters, type FilterState} from "@/components/product-filters"
 import { useToast } from "@/hooks/use-toast"
+import { useAuth } from "@/lib/auth-context"
 
 
 
@@ -48,6 +49,7 @@ export default function ProductPage() {
     })
   }, [product])
   const { toast } = useToast()
+  const { token, isAuthenticated } = useAuth()
  
 
   const handleShare = () => {
@@ -58,6 +60,24 @@ export default function ProductPage() {
         title: "Link copied!",
         description: "Product link has been copied to clipboard",
       })
+    }
+  }
+
+  const handleAddToWishlist = async () => {
+    if (!product) return
+    if (!isAuthenticated || !token) {
+      router.push('/account')
+      return
+    }
+    try {
+      const res = await addToWishlist(product._id, token)
+      if (res.success) {
+        toast({ title: 'Added to wishlist', description: `${product.title} was added to your wishlist.` })
+      } else {
+        toast({ title: 'Failed', description: res.error || 'Could not add to wishlist', variant: 'destructive' })
+      }
+    } catch (e) {
+      toast({ title: 'Error', description: 'Something went wrong. Please try again.', variant: 'destructive' })
     }
   }
 
@@ -479,7 +499,14 @@ export default function ProductPage() {
               >
                 <Share2 className="h-4 w-4" />
               </Button>
-             
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleAddToWishlist}
+                title="Add to wishlist"
+              >
+                <Heart className="h-4 w-4" />
+              </Button>
             </div>
             
             {/* Product Attributes */}

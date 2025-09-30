@@ -60,6 +60,55 @@ export async function getPublicProductById(productId: string): Promise<{ data: a
     throw error;
   }
 }
+// Add to lib/api.ts
+export interface GoogleLoginRequest {
+  token: string;
+}
+
+export async function loginWithGoogle(
+  token: string
+): Promise<{ success: boolean; data?: { token: string; user: User }; error?: string }> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/google-login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({ token }),
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      return { 
+        success: false, 
+        error: errorData.message || 'Google login failed' 
+      };
+    }
+
+    const data = await response.json();
+    return { 
+      success: true, 
+      data: {
+        token: data.token,
+        user: {
+          id: data.user.id,
+          name: data.user.name,
+          email: data.user.email,
+          role: data.user.role,
+          avatar: data.user.avatar
+        }
+      }
+    };
+  } catch (error) {
+    console.error('Google login error:', error);
+    return { 
+      success: false, 
+      error: 'Failed to connect to the server. Please try again.' 
+    };
+  }
+}
 
 export async function getSubcategories(brandSlug: string, categorySlug: string): Promise<ApiSubcategoryResponse> {
   try {
@@ -182,7 +231,7 @@ export async function registerUser(data: RegisterRequest): Promise<{ success: bo
       data: authData
     };
   } catch (error) {
-    console.error('Error registering user:', error);
+    console.error('Login error:', error);
     return {
       success: false,
       error: 'Network error. Please try again.'
@@ -196,26 +245,68 @@ export async function loginUser(data: LoginRequest): Promise<{ success: boolean;
       method: 'POST',
       headers: defaultHeaders,
       body: JSON.stringify(data),
+      credentials: 'include',
     });
 
     if (!response.ok) {
       const errorData: AuthErrorResponse = await response.json();
-      return {
-        success: false,
-        error: errorData.message || errorData.error || 'Login failed'
+      return { 
+        success: false, 
+        error: errorData.message || errorData.error || 'Login failed' 
       };
     }
 
-    const authData: AuthResponse = await response.json();
-    return {
-      success: true,
-      data: authData
+    const responseData: AuthResponse = await response.json();
+    return { 
+      success: true, 
+      data: {
+        token: responseData.token,
+        user: {
+          id: responseData.user.id,
+          name: responseData.user.name,
+          email: responseData.user.email,
+          role: responseData.user.role
+        }
+      }
     };
   } catch (error) {
-    console.error('Error logging in user:', error);
-    return {
-      success: false,
-      error: 'Network error. Please try again.'
+    console.error('Login error:', error);
+    return { 
+      success: false, 
+      error: 'Network error. Please try again.' 
+    };
+  }
+}
+
+export async function addToWishlist(
+  productId: string,
+  token: string
+): Promise<{ success: boolean; data?: any; error?: string }> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/wishlist/${productId}`, {
+      method: 'POST',
+      headers: {
+        ...defaultHeaders,
+        'Authorization': `Bearer ${token}`
+      },
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      return { 
+        success: false, 
+        error: errorData.message || 'Failed to add to wishlist' 
+      };
+    }
+
+    const responseData = await response.json();
+    return { success: true, data: responseData };
+  } catch (error) {
+    console.error('Add to wishlist error:', error);
+    return { 
+      success: false, 
+      error: 'Network error. Please try again.' 
     };
   }
 }
