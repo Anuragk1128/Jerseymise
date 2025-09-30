@@ -1,16 +1,24 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import dynamic from 'next/dynamic'
 import { useRouter } from "next/navigation"
-import { Header } from "@/components/header"
-import { FooterSection } from "@/components/sections/Footer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { useAuth } from "@/lib/auth-context"
-import { Package, Heart, Settings, MapPin, CreditCard,User as UserIcon, Link } from "lucide-react"
+import { Heart, Settings, User as UserIcon } from "lucide-react"
 import { getUserProfile } from "@/lib/api"
 import { User } from "@/lib/auth-context"
+
+// Dynamically import components that use browser APIs
+const Header = dynamic<{}>(
+  () => import('@/components/header').then(mod => mod.Header),
+  { ssr: false }
+)
+const FooterSection = dynamic<{}>(
+  () => import('@/components/sections/Footer').then(mod => mod.FooterSection),
+  { ssr: false }
+)
 
 export default function AccountPage() {
   const { user, isAuthenticated, isLoading, token } = useAuth()
@@ -49,10 +57,9 @@ export default function AccountPage() {
     }
   }
 
-  if (isLoading || profileLoading) {
+  if (typeof window === 'undefined' || isLoading || profileLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <Header />
         <div className="container mx-auto px-4 py-16 text-center">
           <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
           <p>Loading your account...</p>
@@ -62,7 +69,14 @@ export default function AccountPage() {
   }
 
   if (!user) {
-    return null
+    // Let the client-side redirect handle this
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-16 text-center">
+          <p>Redirecting to login...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
