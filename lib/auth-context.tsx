@@ -22,6 +22,7 @@ interface AuthContextType extends AuthState {
   register: (email: string, password: string, name: string) => Promise<{ success: boolean; error?: string }>
   logout: () => void
   getAuthHeaders: () => Record<string, string> | {}
+  setAuthState: React.Dispatch<React.SetStateAction<AuthState>>
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
@@ -151,25 +152,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const getAuthHeaders = () => {
-    const token = localStorage.getItem("fitgear_token")
-    return token ? { Authorization: `Bearer ${token}` } : {}
+    return authState.token ? { Authorization: `Bearer ${authState.token}` } : {}
+  }
+
+  const value = {
+    ...authState,
+    login,
+    register,
+    logout,
+    getAuthHeaders,
+    setAuthState, // Expose setAuthState in the context
   }
 
   return (
-    <AuthContext.Provider
-      value={{
-        ...authState,
-        login,
-        register,
-        logout,
-        getAuthHeaders,
-      }}
-    >
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   )
 }
-
 export function useAuth() {
   const context = useContext(AuthContext)
   if (!context) {
