@@ -10,15 +10,15 @@ export default function FindUs() {
         {
             id: 1,
             name: "Main Office",
-            address: "123 Business St, City, State 12345",
-            phone: "(555) 123-4567",
+            address: "Gaur City Noida",
+            phone: "8409252782",
             hours: "Mon-Fri: 9AM-6PM"
         },
         {
             id: 2,
             name: "Branch Office",
-            address: "456 Commerce Ave, City, State 12345",
-            phone: "(555) 987-6543",
+            address: "Sector 62 , Noida",
+            phone: "9341330223",
             hours: "Mon-Fri: 10AM-5PM"
         }
     ]

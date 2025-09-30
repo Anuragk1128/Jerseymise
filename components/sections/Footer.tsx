@@ -9,12 +9,13 @@ export function FooterSection() {
     <footer className="bg-white text-foreground border-t">
       {/* CTA strip */}
       <div className="bg-black text-white">
-        <div className="container mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <h3 className="text-lg md:text-xl font-extrabold tracking-wide uppercase text-center md:text-left font-gotham">
-            Become a Member & Get 10% Off
-          </h3>
-          <Button className="bg-white text-black hover:bg-white/90">JOIN US</Button>
+        <div className="container mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between items-center gap-4">
+       
+          <Button className="bg-white text-black hover:bg-white/90 justify-center" > 
+          <a href="https://www.instagram.com/jerseymise/" target="_blank">JOIN US</a>
+          </Button>
         </div>
+        
       </div>
 
       {/* Links and newsletter */}
@@ -32,15 +33,15 @@ export function FooterSection() {
             <h4 className="tracking-wide mb-4">NEED HELP</h4>
             <ul className="space-y-2 text-muted-foreground">
               <li><Link href="/return" className="hover:text-foreground">Delivery & Returns</Link></li>
-              <li><Link href="#" className="hover:text-foreground">Payments Methods</Link></li>
-              <li><Link href="#" className="hover:text-foreground">Passion Points</Link></li>
+              <li><Link href="/payments" className="hover:text-foreground">Payments Methods</Link></li>
+              <li><Link href="/passion" className="hover:text-foreground">Passion Points</Link></li>
             </ul>
           </div>
           <div className="text-left">
             <h4 className="tracking-wide mb-4">ABOUT JERSEYMISE</h4>
             <ul className="space-y-2 text-muted-foreground">
               <li><Link href="/story" className="hover:text-foreground">About Story</Link></li>
-              <li><Link href="#" className="hover:text-foreground">Careers</Link></li>
+              <li><Link href="/careers" className="hover:text-foreground">Careers</Link></li>
               <li><Link href="/catalogue" className="hover:text-foreground">Catalogues</Link></li>
             </ul>
           </div>

@@ -247,14 +247,37 @@ export function Header() {
         </div>
       </div>
 
-      {/* promo strip */}
-      
-      <div className="bg-black text-white text-center text-sm py-2 font-gotham">
-      
-       <p>Hassle Free Deliveries</p>
-      
-        
+      {/* Animated promo strip with seamless loop */}
+      <div className="bg-black text-white py-2 overflow-hidden relative">
+        <div className="whitespace-nowrap">
+          <div className="inline-block animate-marquee">
+            <span className="inline-block mx-8 text-sm font-gotham">🚚 Free Shipping on Orders Over ₹699</span>
+            <span className="inline-block mx-8 text-sm font-gotham">✨ Hassle Free Returns & Exchanges</span>
+            <span className="inline-block mx-8 text-sm font-gotham">💳 Secure Payment Options Available</span>
+            <span className="inline-block mx-8 text-sm font-gotham">🎁 Special Offers for New Customers</span>
+            {/* Duplicate content for seamless loop */}
+            <span className="inline-block mx-8 text-sm font-gotham">🚚 Free Shipping on Orders Over ₹699</span>
+            <span className="inline-block mx-8 text-sm font-gotham">✨ Hassle Free Returns & Exchanges</span>
+            <span className="inline-block mx-8 text-sm font-gotham">💳 Secure Payment Options Available</span>
+            <span className="inline-block mx-8 text-sm font-gotham">🎁 Special Offers for New Customers</span>
+          </div>
+        </div>
       </div>
+
+      <style jsx global>{`
+        @keyframes marquee {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+          display: inline-block;
+          white-space: nowrap;
+          animation: marquee 30s linear infinite;
+        }
+        .animate-marquee:hover {
+          animation-play-state: paused;
+        }
+      `}</style>
 
     </header>
   )
