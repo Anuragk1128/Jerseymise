@@ -87,8 +87,9 @@ export default function ProductsPage() {
         }
       }
 
-      // Price filter
-      if (product.price < filters.priceRange[0] || product.price > filters.priceRange[1]) {
+      // Price filter - use GST-inclusive price
+      const priceToFilter = (product as any).priceIncludingTax || product.price
+      if (priceToFilter < filters.priceRange[0] || priceToFilter > filters.priceRange[1]) {
         return false
       }
 
@@ -105,12 +106,20 @@ export default function ProductsPage() {
       return true
     })
 
-    // Apply sorting
+    // Apply sorting - use GST-inclusive prices
     switch (sortBy) {
       case "price-asc":
-        return [...filtered].sort((a, b) => a.price - b.price)
+        return [...filtered].sort((a, b) => {
+          const priceA = (a as any).priceIncludingTax || a.price
+          const priceB = (b as any).priceIncludingTax || b.price
+          return priceA - priceB
+        })
       case "price-desc":
-        return [...filtered].sort((a, b) => b.price - a.price)
+        return [...filtered].sort((a, b) => {
+          const priceA = (a as any).priceIncludingTax || a.price
+          const priceB = (b as any).priceIncludingTax || b.price
+          return priceB - priceA
+        })
       case "newest":
         return [...filtered].sort(
           (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()

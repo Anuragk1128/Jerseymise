@@ -72,12 +72,12 @@ export function Header() {
                     {categories.map((category) => (
                       <Link href={`/products?category=${category.slug}`} key={category._id} className="text-lg font-medium">{category.name}</Link>
                     ))}
-                    <Link href="/kitbuilder" className="text-lg font-medium">Kit Builder</Link>
-                    <Link href="/products?category=sale" className="text-lg font-medium">Sale</Link>
+                    <Link href="/kitbuilder" className="text-lg">Kit Builder</Link>
+                    <Link href="/products?category=sale" className="text-lg">Sale</Link>
                   </nav>
                   <div className="flex flex-col space-y-2 pt-4 border-t">
                     <Button variant="ghost" className="justify-start">
-                      <Heart className="h-5 w-5 mr-2" />
+                      <Heart className="h-5 w-5 mr-2 " />
                       Wishlist
                     </Button>
                     {!isLoading && !isAuthenticated && (
@@ -135,7 +135,7 @@ export function Header() {
                         href={`/products?category=${category.slug}&subcategory=${sub.slug}`}
                         className="group rounded-md p-2 hover:bg-muted/60 transition-colors"
                       >
-                        <div className="text-sm font-medium group-hover:text-primary">{sub.name}</div>
+                        <div className="text-sm font-medium group-hover:text-primary font-gotham">{sub.name}</div>
                         <div className="text-xs text-muted-foreground">Explore {sub.name.toLowerCase()}</div>
                       </Link>
                     ))}
@@ -149,7 +149,7 @@ export function Header() {
                 </HoverCardContent>
               </HoverCard>
             ))}
-            <Link href="/kitbuilder" className="text-sm font-medium hover:text-primary transition-colors">Kit Builder</Link>
+            <Link href="/kitbuilder" className="text-sm font-medium hover:text-primary transition-colors ">Kit Builder</Link>
           </nav>
 
           {/* Search */}
@@ -179,9 +179,14 @@ export function Header() {
       </div>
 
       {/* promo strip */}
-      <div className="bg-black text-white text-center text-sm py-2">
-        Easy Return Within 7 Days
+      
+      <div className="bg-black text-white text-center text-sm py-2 font-gotham">
+      
+       <p>Hassle Free Deliveries</p>
+      
+        
       </div>
+
     </header>
   )
 }

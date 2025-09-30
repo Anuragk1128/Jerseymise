@@ -8,10 +8,14 @@ import { FooterSection } from "@/components/sections/Footer"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Star, Truck, RotateCcw, Shield, Plus, Minus, ChevronLeft, ChevronRight } from "lucide-react"
+import { Star, Truck, RotateCcw, Shield, Plus,Share2 ,Heart, ChevronLeft, ChevronRight } from "lucide-react"
 import { formatCurrency, formatCurrencyWithGST } from "@/lib/utils"
 import { getAllProducts, getProductById, getPublicProductById } from "@/lib/api"
 import type { Product } from "@/lib/types"
+import {ProductFilters, type FilterState} from "@/components/product-filters"
+import { useToast } from "@/hooks/use-toast"
+
+
 
 export default function ProductPage() {
   const params = useParams<{ id: string }>()
@@ -24,7 +28,12 @@ export default function ProductPage() {
   const [product, setProduct] = useState<Product | null>(null)
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([])
   const [error, setError] = useState<string | null>(null)
-
+  const [filters, setFilters] = useState<FilterState>({
+    categories: [],
+    priceRange: [0, 5000],
+    inStockOnly: false,
+    minRating: 0,
+  })
   // Navigation functions - defined early to maintain hook order
   const goToPreviousImage = useCallback(() => {
     setSelectedImage(prev => {
@@ -38,6 +47,19 @@ export default function ProductPage() {
       return prev === 0 ? productImages.length - 1 : prev - 1
     })
   }, [product])
+  const { toast } = useToast()
+ 
+
+  const handleShare = () => {
+    if (product) {
+      const url = `${window.location.origin}/products/${product._id}`
+      navigator.clipboard.writeText(url)
+      toast({
+        title: "Link copied!",
+        description: "Product link has been copied to clipboard",
+      })
+    }
+  }
 
   const goToNextImage = useCallback(() => {
     setSelectedImage(prev => {
@@ -78,7 +100,14 @@ export default function ProductPage() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [product, goToPreviousImage, goToNextImage])
 
-  // Fetch related products when product changes
+  // Helper function to get category slug
+  const getSlug = (v: string | { _id: string; name: string; slug: string } | undefined | null) => {
+    if (!v) return "";
+    if (typeof v === "string") return v; // fallback if API sends string ids without slug
+    return v.slug || "";
+  };
+
+  // Fetch related products when product or filters change
   useEffect(() => {
     const fetchRelatedProducts = async () => {
       if (!product) return;
@@ -86,12 +115,45 @@ export default function ProductPage() {
       try {
         // Fetch all products and filter by the same category
         const response = await getAllProducts("sportswear", { limit: 100 });
-        const related = response.data.filter(
+        let related = response.data.filter(
           (p: any) => 
             p._id !== product._id && 
-            p.categoryId === product.categoryId &&
             p.status !== 'archived'
         );
+
+        // Apply category filter if selected
+        if (filters.categories.length > 0) {
+          console.log('Filtering by categories:', filters.categories);
+          related = related.filter((p: any) => {
+            const productCategorySlug = getSlug(p.categoryId);
+            console.log('Product category slug:', productCategorySlug, 'for product:', p.title);
+            const matches = filters.categories.some(category => 
+              productCategorySlug.toLowerCase() === category.toLowerCase()
+            );
+            console.log('Matches filter:', matches);
+            return matches;
+          });
+        } else {
+          // If no category filter, show products from same category as current product
+          const currentProductCategorySlug = getSlug(product.categoryId);
+          console.log('No category filter, showing products from category:', currentProductCategorySlug);
+          related = related.filter((p: any) => {
+            const productCategorySlug = getSlug(p.categoryId);
+            return productCategorySlug === currentProductCategorySlug;
+          });
+        }
+
+        // Apply price filter
+        related = related.filter((p: any) => {
+          const priceToFilter = p.priceIncludingTax || p.price;
+          return priceToFilter >= filters.priceRange[0] && priceToFilter <= filters.priceRange[1];
+        });
+
+        // Apply stock filter
+        if (filters.inStockOnly) {
+          related = related.filter((p: any) => p.stock > 0);
+        }
+
         setRelatedProducts(related.slice(0, 4));
       } catch (error) {
         console.error("Error fetching related products:", error);
@@ -99,7 +161,7 @@ export default function ProductPage() {
     };
 
     fetchRelatedProducts();
-  }, [product]);
+  }, [product, filters]);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -332,35 +394,55 @@ export default function ProductPage() {
               </div>
             </div>
 
-            {p?.variants && p.variants.length > 0 && (
-              <div className="space-y-4">
-                {p.variants.map((variant: any) => (
-                  <div key={variant.name} className="space-y-2">
-                    <h3 className="text-sm font-medium">{variant.name}</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {variant.options.map((option: string) => (
-                        <Button
-                          key={option}
-                          variant={
-                            (variant.name === 'Size' && selectedSize === option) || 
-                            (variant.name === 'Color' && selectedColor === option)
-                              ? "default" 
-                              : "outline"
-                          }
-                          size="sm"
-                          onClick={() => {
-                            if (variant.name === 'Size') setSelectedSize(option);
-                            if (variant.name === 'Color') setSelectedColor(option);
-                          }}
-                        >
-                          {option}
-                        </Button>
-                      ))}
-                    </div>
+            {/* Size and Color Selection */}
+            <div className="space-y-4">
+              
+              {/* Size Selection */}
+              {((p?.variants && p.variants.length > 0) || (product.attributes?.size && product.attributes.size.length > 0)) && (
+                <div className="space-y-2">
+                  <h3 className="text-sm font-medium">Size</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {(p?.variants?.find((v: any) => v.name === 'Size')?.options || product.attributes?.size || []).map((size: string) => (
+                      <Button
+                        key={size}
+                        variant={selectedSize === size ? "default" : "outline"}
+                        size="sm"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setSelectedSize(size);
+                        }}
+                      >
+                        {size}
+                      </Button>
+                    ))}
                   </div>
-                ))}
-              </div>
-            )}
+                </div>
+              )}
+
+              {/* Color Selection */}
+              {((p?.variants && p.variants.length > 0) || (product.attributes?.color && product.attributes.color.length > 0)) && (
+                <div className="space-y-2">
+                  <h3 className="text-sm font-medium">Color</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {(p?.variants?.find((v: any) => v.name === 'Color')?.options || product.attributes?.color || []).map((color: string) => (
+                      <Button
+                        key={color}
+                        variant={selectedColor === color ? "default" : "outline"}
+                        size="sm"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setSelectedColor(color);
+                        }}
+                      >
+                        {color}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Features */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t">
@@ -388,6 +470,17 @@ export default function ProductPage() {
               </div>
               <Button onClick={handleShopNow}>Shop Now</Button>
             </div>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="icon"
+                onClick={handleShare}
+                title="Share product"
+              >
+                <Share2 className="h-4 w-4" />
+              </Button>
+             
+            </div>
             
             {/* Product Attributes */}
             {(product.attributes || product.tags?.length) && (
@@ -412,34 +505,6 @@ export default function ProductPage() {
                   </div>
                 )}
 
-                {/* Sizes */}
-                {Array.isArray(product.attributes?.size) && product.attributes!.size.length > 0 && (
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-2">Available Sizes</p>
-                    <div className="flex flex-wrap gap-2">
-                      {product.attributes!.size.map((s: string) => (
-                        <Badge key={s} variant="secondary" className="px-3 py-1">
-                          {s}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Colors */}
-                {Array.isArray(product.attributes?.color) && product.attributes!.color.length > 0 && (
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-2">Available Colors</p>
-                    <div className="flex flex-wrap gap-2">
-                      {product.attributes!.color.map((c: string) => (
-                        <Badge key={c} variant="outline" className="px-3 py-1">
-                          {c}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
                 {/* Tags */}
                 {Array.isArray(product.tags) && product.tags.length > 0 && (
                   <div>
@@ -460,55 +525,12 @@ export default function ProductPage() {
 
         {/* Related Products */}
         <div className="mt-16">
-          <h2 className="text-2xl font-bold mb-8">You might also like</h2>
-          {relatedProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {relatedProducts.map((relatedProduct) => {
-                const relatedDiscount = relatedProduct.compareAtPrice && relatedProduct.compareAtPrice > relatedProduct.price
-                  ? Math.round(((relatedProduct.compareAtPrice - relatedProduct.price) / relatedProduct.compareAtPrice) * 100)
-                  : 0;
-                const imageUrl = (Array.isArray(relatedProduct.images) && relatedProduct.images.length > 0)
-                  ? relatedProduct.images[0]
-                  : (relatedProduct as any)?.image ?? '/placeholder.svg';
-
-                return (
-                  <div key={relatedProduct._id} className="group overflow-hidden border-0 shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer">
-                    <div className="relative aspect-square overflow-hidden bg-gray-50">
-                      <Image
-                        src={imageUrl}
-                        alt={relatedProduct.title || 'Product image'}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      {relatedDiscount > 0 && (
-                        <Badge className="absolute top-2 left-2 bg-red-500 hover:bg-red-600">
-                          -{relatedDiscount}%
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="p-4">
-                      <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
-                        {relatedProduct.title}
-                      </h3>
-                      <div className="flex items-center gap-2">
-                        <div className="flex flex-col">
-                          <span className="text-lg font-bold">{formatCurrencyWithGST((relatedProduct as any).priceIncludingTax || relatedProduct.price)}</span>
-                          <span className="text-xs text-muted-foreground">Incl. GST</span>
-                        </div>
-                        {relatedProduct.compareAtPrice && relatedProduct.compareAtPrice > relatedProduct.price && (
-                          <span className="text-sm text-muted-foreground line-through">
-                            {formatCurrency(relatedProduct.compareAtPrice)}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <h2 className="text-2xl font-bold">You might also like</h2>
             </div>
-          ) : (
+            
             <p className="text-muted-foreground">No related products found.</p>
-          )}
+          
         </div>
       </div>
       <FooterSection/>

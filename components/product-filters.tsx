@@ -24,7 +24,7 @@ export function ProductFilters({ onFiltersChange }: ProductFiltersProps) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [filters, setFilters] = useState<FilterState>({
     categories: [],
-    priceRange: [0, 500],
+    priceRange: [0, 5000],
     inStockOnly: false,
     minRating: 0,
   })
@@ -47,7 +47,7 @@ export function ProductFilters({ onFiltersChange }: ProductFiltersProps) {
   const clearFilters = () => {
     const clearedFilters: FilterState = {
       categories: [],
-      priceRange: [0, 500],
+      priceRange: [0, 5000],
       inStockOnly: false,
       minRating: 0,
     }
@@ -95,9 +95,9 @@ export function ProductFilters({ onFiltersChange }: ProductFiltersProps) {
             <Slider
               value={filters.priceRange}
               onValueChange={(value) => updateFilters({ priceRange: value as [number, number] })}
-              max={500}
+              max={5000}
               min={0}
-              step={10}
+              step={50}
               className="mb-2"
             />
             <div className="flex justify-between text-sm text-muted-foreground">
