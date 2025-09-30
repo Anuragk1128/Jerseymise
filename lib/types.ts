@@ -25,6 +25,7 @@ export interface Product {
   attributes: ProductAttributes;
   rating?: number;
   numReviews?: number;
+  isFeatured?: boolean;
   createdAt: string;
   updatedAt: string;
 }

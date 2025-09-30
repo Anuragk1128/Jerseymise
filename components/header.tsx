@@ -1,18 +1,19 @@
 "use client"
 import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { AuthDialog } from "@/components/auth-dialog"
 import { UserMenu } from "@/components/user-menu"
 import { useAuth } from "@/lib/auth-context"
-import { Search, Menu, Heart } from "lucide-react"
+import { Search, Menu, Heart, X } from "lucide-react"
 import localFont from "next/font/local"
 import { getCategories, getSubcategories } from "@/lib/api";
 import type { Category, Subcategory } from "@/lib/types";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 
 const montserrat = localFont({
   src: [
@@ -23,26 +24,49 @@ const montserrat = localFont({
 })
 
 export function Header() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [searchQuery, setSearchQuery] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
   const [subcategoriesBySlug, setSubcategoriesBySlug] = useState<Record<string, Subcategory[]>>({});
   const [loadingBySlug, setLoadingBySlug] = useState<Record<string, boolean>>({});
+  const [isLoading, setIsLoading] = useState(true);
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
 
+  // Fetch categories on mount
   useEffect(() => {
-    async function fetchCategories() {
-      const response = await getCategories("sportswear");
-      setCategories(response.data);
+    const fetchCategories = async () => {
+      try {
+        const result = await getCategories("sportswear");
+        setCategories(result.data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    const query = searchParams.get('q');
+    if (query) {
+      setSearchQuery(decodeURIComponent(query));
     }
 
     fetchCategories();
-  }, []);
+  }, [searchParams]);
 
   async function ensureSubcategories(categorySlug: string) {
     if (subcategoriesBySlug[categorySlug] || loadingBySlug[categorySlug]) return;
-    setLoadingBySlug((m) => ({ ...m, [categorySlug]: true }));
-    const res = await getSubcategories("sportswear", categorySlug);
-    setSubcategoriesBySlug((m) => ({ ...m, [categorySlug]: res.data }));
-    setLoadingBySlug((m) => ({ ...m, [categorySlug]: false }));
+    
+    setLoadingBySlug(prev => ({ ...prev, [categorySlug]: true }));
+    
+    try {
+      const res = await getSubcategories("sportswear", categorySlug);
+      setSubcategoriesBySlug(prev => ({ ...prev, [categorySlug]: res.data }));
+    } catch (error) {
+      console.error(`Error fetching subcategories for ${categorySlug}:`, error);
+    } finally {
+      setLoadingBySlug(prev => ({ ...prev, [categorySlug]: false }));
+    }
   }
 
   return (
@@ -66,7 +90,22 @@ export function Header() {
                 <div className="flex flex-col space-y-4 mt-8">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-14 w-4 text-muted-foreground" />
-                    <Input placeholder="Search For The Product" className="pl-10" />
+                    <Input 
+                placeholder="Search for products..." 
+                className="pl-10 pr-8" 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2 text-muted-foreground hover:text-foreground"
+                  aria-label="Clear search"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
                   </div>
                   <nav className="flex flex-col space-y-4">
                     {categories.map((category) => (
@@ -153,11 +192,39 @@ export function Header() {
           </nav>
 
           {/* Search */}
-          <div className="flex-1 max-w-lg mx-10">
-            <div className="relative">
+          <div className="flex-1 max-w-lg mx-4">
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault();
+                const query = searchQuery.trim();
+                if (query) {
+                  const params = new URLSearchParams();
+                  params.set('q', query);
+                  router.push(`/products?${params.toString()}`);
+                }
+              }}
+              className="relative flex items-center"
+            >
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search For The Product" className="pl-10" />
-            </div>
+              <Input 
+                placeholder="Search For The Product" 
+                className="pl-10 pr-8"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery('');
+                    router.push('/products');
+                  }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </form>
           </div>
 
           {/* Right: Profile / Wishlist */}
