@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
@@ -11,21 +11,11 @@ import { AuthDialog } from "@/components/auth-dialog"
 import { UserMenu } from "@/components/user-menu"
 import { useAuth } from "@/lib/auth-context"
 import { Search, Menu, Heart, X } from "lucide-react"
-import localFont from "next/font/local"
 import { getCategories, getSubcategories } from "@/lib/api";
 import type { Category, Subcategory } from "@/lib/types";
 
-const montserrat = localFont({
-  src: [
-    { path: "../Montserrat/Montserrat-VariableFont_wght.ttf", weight: "100 900", style: "normal" },
-    { path: "../Montserrat/Montserrat-Italic-VariableFont_wght.ttf", weight: "100 900", style: "italic" },
-  ],
-  variable: "--font-montserrat",
-})
-
 export function Header() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
   const [subcategoriesBySlug, setSubcategoriesBySlug] = useState<Record<string, Subcategory[]>>({});
@@ -45,14 +35,21 @@ export function Header() {
         setIsLoading(false);
       }
     };
-
-    const query = searchParams.get('q');
-    if (query) {
-      setSearchQuery(decodeURIComponent(query));
-    }
-
     fetchCategories();
-  }, [searchParams]);
+  }, []);
+
+  function SearchQueryInitializer({ onSet }: { onSet: (q: string) => void }) {
+    const searchParams = useSearchParams();
+    useEffect(() => {
+      const query = searchParams.get('q');
+      if (query) {
+        onSet(decodeURIComponent(query));
+      } else {
+        onSet('');
+      }
+    }, [searchParams, onSet]);
+    return null;
+  }
 
   async function ensureSubcategories(categorySlug: string) {
     if (subcategoriesBySlug[categorySlug] || loadingBySlug[categorySlug]) return;
@@ -70,7 +67,10 @@ export function Header() {
   }
 
   return (
-    <header className={`bg-white border-b ${montserrat.className}`}>
+    <header className={"bg-white border-b"}>
+      <Suspense fallback={null}>
+        <SearchQueryInitializer onSet={setSearchQuery} />
+      </Suspense>
       {/* Top link bar */}
       <div className="border-b">
         <div className="container mx-auto px-4 h-10 flex items-center">

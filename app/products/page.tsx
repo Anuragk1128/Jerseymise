@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useEffect, Dispatch, SetStateAction } from "react"
+import { useState, useMemo, useEffect, Dispatch, SetStateAction, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { Header } from "@/components/header"
 import { FooterSection } from "@/components/sections/Footer"
@@ -13,7 +13,7 @@ import { Filter, AlertCircle, Search } from "lucide-react"
 import { getAllProducts, getProductsByCategoryAndSubcategory } from "@/lib/api"
 import type { Product } from "@/lib/types"
 
-export default function ProductsPage() {
+function ProductsPageInner() {
   const searchParams = useSearchParams()
   const categoryParam = searchParams.get("category")
   const subcategoryParam = searchParams.get("subcategory")
@@ -308,5 +308,13 @@ export default function ProductsPage() {
       </main>
       <FooterSection />
     </div>
+  )
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50"><Header /></div>}>
+      <ProductsPageInner />
+    </Suspense>
   )
 }

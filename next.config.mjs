@@ -12,7 +12,6 @@ const nextConfig = {
   },
   // Required for @react-oauth/google
   reactStrictMode: true,
-  swcMinify: true,
   // Required for Google OAuth
   async headers() {
     return [

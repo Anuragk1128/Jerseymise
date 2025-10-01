@@ -1,5 +1,6 @@
 "use client"
 
+import { Suspense } from "react"
 import Link from "next/link"
 import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
@@ -7,7 +8,9 @@ import { Button } from "@/components/ui/button"
 export default function CartPage() {
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Suspense fallback={null}>
+        <Header />
+      </Suspense>
       <div className="container mx-auto px-4 py-16 text-center">
         <h1 className="text-3xl font-bold mb-4">Purchasing Disabled</h1>
         <p className="text-muted-foreground mb-8">

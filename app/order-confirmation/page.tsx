@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { Suspense, useEffect } from "react"
 import Link from "next/link"
 import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
@@ -17,7 +17,9 @@ export default function OrderConfirmationPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Suspense fallback={null}>
+        <Header />
+      </Suspense>
 
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-2xl mx-auto text-center">

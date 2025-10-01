@@ -1,12 +1,13 @@
 "use client"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
+import { Suspense } from "react"
 import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { CheckCircle, Package, Mail, ArrowRight } from "lucide-react"
 
-export default function CheckoutSuccessPage() {
+function CheckoutSuccessInner() {
   const searchParams = useSearchParams()
   const orderNumber = searchParams.get("order") || "ORD-" + Math.random().toString(36).substr(2, 9).toUpperCase()
 
@@ -75,5 +76,13 @@ export default function CheckoutSuccessPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function CheckoutSuccessPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background"><Header /></div>}>
+      <CheckoutSuccessInner />
+    </Suspense>
   )
 }

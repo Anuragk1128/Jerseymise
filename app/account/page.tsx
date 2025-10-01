@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import dynamic from 'next/dynamic'
+import { Header } from "@/components/header"
+import { FooterSection } from "@/components/sections/Footer"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -10,15 +11,6 @@ import { Heart, Settings, User as UserIcon } from "lucide-react"
 import { getUserProfile } from "@/lib/api"
 import { User } from "@/lib/auth-context"
 
-// Dynamically import components that use browser APIs
-const Header = dynamic<{}>(
-  () => import('@/components/header').then(mod => mod.Header),
-  { ssr: false }
-)
-const FooterSection = dynamic<{}>(
-  () => import('@/components/sections/Footer').then(mod => mod.FooterSection),
-  { ssr: false }
-)
 
 export default function AccountPage() {
   const { user, isAuthenticated, isLoading, token } = useAuth()
