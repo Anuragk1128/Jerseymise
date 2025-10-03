@@ -14,6 +14,7 @@ interface WishlistProduct {
   images: string[]
   price: number
   priceIncludingTax?: number | null
+  brandId?: string
 }
 
 interface WishlistItem {
@@ -94,11 +95,14 @@ export default function WishlistPage() {
           <p className="text-muted-foreground">Loading...</p>
         ) : error ? (
           <p className="text-red-500">{error}</p>
-        ) : items.length === 0 ? (
+        ) : (() => {
+          const IRA_BRAND_ID = '68b6dbb8979adf12e46f2739'
+          const filteredItems = items.filter((i) => i.product.brandId !== IRA_BRAND_ID)
+          return filteredItems.length === 0 ? (
           <p className="text-muted-foreground">Your wishlist is empty.</p>
-        ) : (
+          ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {items.map((item) => (
+            {filteredItems.map((item) => (
               <div key={item._id} className="border rounded-lg overflow-hidden">
                 <div className="relative aspect-square">
                   <Image
@@ -121,7 +125,8 @@ export default function WishlistPage() {
               </div>
             ))}
           </div>
-        )}
+          )
+        })()}
       </div>
       <FooterSection />
     </div>
