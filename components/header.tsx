@@ -14,9 +14,199 @@ import { Search, Menu, Heart, X } from "lucide-react"
 import { getCategories, getSubcategories } from "@/lib/api";
 import type { Category, Subcategory } from "@/lib/types";
 
+// Separate component for search functionality that uses useSearchParams
+function SearchComponent({ variant = 'desktop' }: { variant?: 'desktop' | 'mobile' }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchSuggestions, setSearchSuggestions] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  // Initialize search query from URL only once on mount
+  useEffect(() => {
+    const query = searchParams.get('q');
+    if (query) {
+      setSearchQuery(decodeURIComponent(query));
+    }
+  }, []); // Empty dependency array - only run once
+
+  // Generate search suggestions based on query
+  useEffect(() => {
+    if (searchQuery.length > 1) {
+      const suggestions = [
+        'jersey', 't-shirt', 'shorts', 'pants', 'hoodie', 'jacket',
+        'football', 'basketball', 'soccer', 'cricket', 'tennis',
+        'nike', 'adidas', 'puma', 'reebok', 'under armour',
+        'training', 'gym', 'fitness', 'sports', 'athletic'
+      ].filter(item => 
+        item.toLowerCase().includes(searchQuery.toLowerCase())
+      ).slice(0, 5);
+      
+      setSearchSuggestions(suggestions);
+      setShowSuggestions(suggestions.length > 0);
+    } else {
+      setSearchSuggestions([]);
+      setShowSuggestions(false);
+    }
+  }, [searchQuery]);
+
+  if (variant === 'mobile') {
+    return (
+      <div className="relative">
+        <form 
+          onSubmit={(e) => {
+            e.preventDefault();
+            const query = searchQuery.trim();
+            if (query) {
+              const params = new URLSearchParams();
+              params.set('q', query);
+              router.push(`/products?${params.toString()}`);
+              setShowSuggestions(false);
+            }
+          }}
+          className="relative"
+        >
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
+          <Input 
+            placeholder="Search for products..." 
+            className="pl-10 pr-8" 
+            value={searchQuery}
+            onChange={(e) => {
+              console.log('Mobile search input changed:', e.target.value);
+              setSearchQuery(e.target.value);
+            }}
+            onFocus={() => {
+              if (searchSuggestions.length > 0) {
+                setShowSuggestions(true);
+              }
+            }}
+            onBlur={() => {
+              setTimeout(() => setShowSuggestions(false), 200);
+            }}
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => {
+                setSearchQuery('');
+                setShowSuggestions(false);
+                router.push('/products');
+              }}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground z-10"
+              aria-label="Clear search"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </form>
+        
+        {/* Mobile Search Suggestions */}
+        {showSuggestions && searchSuggestions.length > 0 && (
+          <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-md shadow-lg z-50 mt-1">
+            {searchSuggestions.map((suggestion, index) => (
+              <button
+                key={index}
+                type="button"
+                className="w-full text-left px-4 py-2 hover:bg-gray-100 first:rounded-t-md last:rounded-b-md"
+                onClick={() => {
+                  setSearchQuery(suggestion);
+                  setShowSuggestions(false);
+                  const params = new URLSearchParams();
+                  params.set('q', suggestion);
+                  router.push(`/products?${params.toString()}`);
+                }}
+              >
+                <div className="flex items-center">
+                  <Search className="h-3 w-3 text-gray-400 mr-2" />
+                  {suggestion}
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex-1 max-w-lg mx-4 relative">
+      <form 
+        onSubmit={(e) => {
+          e.preventDefault();
+          const query = searchQuery.trim();
+          if (query) {
+            const params = new URLSearchParams();
+            params.set('q', query);
+            router.push(`/products?${params.toString()}`);
+            setShowSuggestions(false);
+          }
+        }}
+        className="relative flex items-center"
+      >
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
+        <Input 
+          placeholder="Search For The Product" 
+          className="pl-10 pr-8"
+          value={searchQuery}
+          onChange={(e) => {
+            console.log('Desktop search input changed:', e.target.value);
+            setSearchQuery(e.target.value);
+          }}
+          onFocus={() => {
+            if (searchSuggestions.length > 0) {
+              setShowSuggestions(true);
+            }
+          }}
+          onBlur={() => {
+            // Delay hiding suggestions to allow clicking on them
+            setTimeout(() => setShowSuggestions(false), 200);
+          }}
+        />
+        {searchQuery && (
+          <button
+            type="button"
+            onClick={() => {
+              setSearchQuery('');
+              setShowSuggestions(false);
+              router.push('/products');
+            }}
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground z-10"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
+      </form>
+      
+      {/* Search Suggestions */}
+      {showSuggestions && searchSuggestions.length > 0 && (
+        <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-md shadow-lg z-50 mt-1">
+          {searchSuggestions.map((suggestion, index) => (
+            <button
+              key={index}
+              type="button"
+              className="w-full text-left px-4 py-2 hover:bg-gray-100 first:rounded-t-md last:rounded-b-md"
+              onClick={() => {
+                setSearchQuery(suggestion);
+                setShowSuggestions(false);
+                const params = new URLSearchParams();
+                params.set('q', suggestion);
+                router.push(`/products?${params.toString()}`);
+              }}
+            >
+              <div className="flex items-center">
+                <Search className="h-3 w-3 text-gray-400 mr-2" />
+                {suggestion}
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function Header() {
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
   const [subcategoriesBySlug, setSubcategoriesBySlug] = useState<Record<string, Subcategory[]>>({});
   const [loadingBySlug, setLoadingBySlug] = useState<Record<string, boolean>>({});
@@ -38,19 +228,6 @@ export function Header() {
     fetchCategories();
   }, []);
 
-  function SearchQueryInitializer({ onSet }: { onSet: (q: string) => void }) {
-    const searchParams = useSearchParams();
-    useEffect(() => {
-      const query = searchParams.get('q');
-      if (query) {
-        onSet(decodeURIComponent(query));
-      } else {
-        onSet('');
-      }
-    }, [searchParams, onSet]);
-    return null;
-  }
-
   async function ensureSubcategories(categorySlug: string) {
     if (subcategoriesBySlug[categorySlug] || loadingBySlug[categorySlug]) return;
     
@@ -68,9 +245,6 @@ export function Header() {
 
   return (
     <header className={"bg-white border-b"}>
-      <Suspense fallback={null}>
-        <SearchQueryInitializer onSet={setSearchQuery} />
-      </Suspense>
       {/* Top link bar */}
       <div className="border-b">
         <div className="container mx-auto px-4 h-10 flex items-center">
@@ -88,25 +262,9 @@ export function Header() {
               </SheetTrigger>
               <SheetContent side="right" className="w-80">
                 <div className="flex flex-col space-y-4 mt-8">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-14 w-4 text-muted-foreground" />
-                    <Input 
-                placeholder="Search for products..." 
-                className="pl-10 pr-8" 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-2 text-muted-foreground hover:text-foreground"
-                  aria-label="Clear search"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              )}
-                  </div>
+                  <Suspense fallback={<div className="h-9 bg-gray-100 rounded-md animate-pulse"></div>}>
+                    <SearchComponent variant="mobile" />
+                  </Suspense>
                   <nav className="flex flex-col space-y-4">
                     {categories.map((category) => (
                       <Link href={`/products?category=${category.slug}`} key={category._id} className="text-lg font-medium">{category.name}</Link>
@@ -192,40 +350,9 @@ export function Header() {
           </nav>
 
           {/* Search */}
-          <div className="flex-1 max-w-lg mx-4">
-            <form 
-              onSubmit={(e) => {
-                e.preventDefault();
-                const query = searchQuery.trim();
-                if (query) {
-                  const params = new URLSearchParams();
-                  params.set('q', query);
-                  router.push(`/products?${params.toString()}`);
-                }
-              }}
-              className="relative flex items-center"
-            >
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Search For The Product" 
-                className="pl-10 pr-8"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSearchQuery('');
-                    router.push('/products');
-                  }}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              )}
-            </form>
-          </div>
+          <Suspense fallback={<div className="flex-1 max-w-lg mx-4 h-9 bg-gray-100 rounded-md animate-pulse"></div>}>
+            <SearchComponent />
+          </Suspense>
 
           {/* Right: Profile / Wishlist */}
           <div className="flex items-center gap-2 ml-auto">
