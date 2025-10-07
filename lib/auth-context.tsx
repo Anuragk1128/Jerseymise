@@ -19,7 +19,7 @@ interface AuthState {
 
 interface AuthContextType extends AuthState {
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
-  register: (email: string, password: string, name: string) => Promise<{ success: boolean; error?: string }>
+  register: (email: string, password: string, name: string, otp: string) => Promise<{ success: boolean; error?: string }>
   logout: () => void
   getAuthHeaders: () => Record<string, string> | {}
   setAuthState: React.Dispatch<React.SetStateAction<AuthState>>
@@ -109,9 +109,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     email: string,
     password: string,
     name: string,
+    otp: string
   ): Promise<{ success: boolean; error?: string }> => {
     try {
-      const result = await registerUser({ name, email, password })
+      const result = await registerUser({ name, email, password, otp })
       
       if (result.success && result.data) {
         const { token, user: apiUser } = result.data

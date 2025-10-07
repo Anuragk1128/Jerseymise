@@ -68,6 +68,7 @@ export interface RegisterRequest {
   name: string;
   email: string;
   password: string;
+  otp: string;
 }
 
 export interface AuthResponse {

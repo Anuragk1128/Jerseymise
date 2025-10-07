@@ -209,6 +209,36 @@ export async function getAllProducts(
 }
 
 // Auth API functions
+export async function sendOTP(email: string): Promise<{ success: boolean; message?: string; error?: string }> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/register/send-otp`, {
+      method: 'POST',
+      headers: defaultHeaders,
+      body: JSON.stringify({ email }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      return {
+        success: false,
+        error: errorData.message || errorData.error || 'Failed to send OTP'
+      };
+    }
+
+    const data = await response.json();
+    return {
+      success: true,
+      message: data.message || 'OTP sent to email'
+    };
+  } catch (error) {
+    console.error('Send OTP error:', error);
+    return {
+      success: false,
+      error: 'Network error. Please try again.'
+    };
+  }
+}
+
 export async function registerUser(data: RegisterRequest): Promise<{ success: boolean; data?: AuthResponse; error?: string }> {
   try {
     const response = await fetch(`${API_BASE_URL}/auth/register`, {

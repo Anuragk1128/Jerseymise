@@ -3,7 +3,7 @@
 import type React from "react"
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import GoogleLoginButton from "./google"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,13 +11,21 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useAuth } from "@/lib/auth-context"
 import { useToast } from "@/hooks/use-toast"
-import { User, Loader2 } from "lucide-react"
+import { User, Loader2, ArrowLeft } from "lucide-react"
+import { OTPInput } from "@/components/otp-input"
+import { sendOTP } from "@/lib/api"
 
 export function AuthDialog() {
   const { login, register } = useAuth()
   const { toast } = useToast()
   const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+
+  // Registration step state
+  const [registrationStep, setRegistrationStep] = useState<1 | 2>(1)
+  const [otp, setOtp] = useState("")
+  const [otpTimer, setOtpTimer] = useState(0)
+  const [canResendOTP, setCanResendOTP] = useState(false)
 
   const [loginForm, setLoginForm] = useState({
     email: "",
@@ -30,6 +38,113 @@ export function AuthDialog() {
     password: "",
     confirmPassword: "",
   })
+
+  // Timer for OTP expiration (10 minutes = 600 seconds)
+  useEffect(() => {
+    if (otpTimer > 0) {
+      const interval = setInterval(() => {
+        setOtpTimer((prev) => {
+          if (prev <= 1) {
+            setCanResendOTP(true)
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+      return () => clearInterval(interval)
+    }
+  }, [otpTimer])
+
+  // Format timer display
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins}:${secs.toString().padStart(2, '0')}`
+  }
+
+  // Reset registration form when dialog closes
+  useEffect(() => {
+    if (!isOpen) {
+      setRegistrationStep(1)
+      setOtp("")
+      setOtpTimer(0)
+      setCanResendOTP(false)
+      setRegisterForm({ name: "", email: "", password: "", confirmPassword: "" })
+    }
+  }, [isOpen])
+
+  const handleSendOTP = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (!registerForm.email) {
+      toast({
+        title: "Email required",
+        description: "Please enter your email address.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    setIsLoading(true)
+
+    try {
+      const result = await sendOTP(registerForm.email)
+      if (result.success) {
+        toast({
+          title: "OTP Sent!",
+          description: result.message || "Please check your email for the OTP.",
+        })
+        setRegistrationStep(2)
+        setOtpTimer(600) // 10 minutes
+        setCanResendOTP(false)
+      } else {
+        toast({
+          title: "Failed to send OTP",
+          description: result.error || "Please try again.",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleResendOTP = async () => {
+    setIsLoading(true)
+
+    try {
+      const result = await sendOTP(registerForm.email)
+      if (result.success) {
+        toast({
+          title: "OTP Resent!",
+          description: "A new OTP has been sent to your email.",
+        })
+        setOtpTimer(600) // Reset to 10 minutes
+        setCanResendOTP(false)
+        setOtp("") // Clear existing OTP input
+      } else {
+        toast({
+          title: "Failed to resend OTP",
+          description: result.error || "Please try again.",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -83,16 +198,28 @@ export function AuthDialog() {
       return
     }
 
+    if (otp.length !== 6) {
+      toast({
+        title: "Invalid OTP",
+        description: "Please enter the 6-digit OTP sent to your email.",
+        variant: "destructive",
+      })
+      return
+    }
+
     setIsLoading(true)
 
     try {
-      const result = await register(registerForm.email, registerForm.password, registerForm.name)
+      const result = await register(registerForm.email, registerForm.password, registerForm.name, otp)
       if (result.success) {
         toast({
           title: "Account created!",
           description: "Your account has been created successfully.",
         })
         setIsOpen(false)
+        setRegistrationStep(1)
+        setOtp("")
+        setOtpTimer(0)
         setRegisterForm({ name: "", email: "", password: "", confirmPassword: "" })
       } else {
         toast({
@@ -186,62 +313,138 @@ export function AuthDialog() {
           </TabsContent>
 
           <TabsContent value="register" className="space-y-4">
-            <form onSubmit={handleRegister} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="register-name">Full Name</Label>
-                <Input
-                  id="register-name"
-                  type="text"
-                  placeholder="Enter your full name"
-                  value={registerForm.name}
-                  onChange={(e) => setRegisterForm({ ...registerForm, name: e.target.value })}
-                  required
-                />
+            {registrationStep === 1 ? (
+              // Step 1: Enter Email and Send OTP
+              <form onSubmit={handleSendOTP} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="register-email">Email</Label>
+                  <Input
+                    id="register-email"
+                    type="email"
+                    placeholder="Enter your email"
+                    value={registerForm.email}
+                    onChange={(e) => setRegisterForm({ ...registerForm, email: e.target.value })}
+                    required
+                  />
+                </div>
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Sending OTP...
+                    </>
+                  ) : (
+                    "Send OTP"
+                  )}
+                </Button>
+              </form>
+            ) : (
+              // Step 2: Complete Registration with OTP
+              <div className="space-y-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setRegistrationStep(1)
+                    setOtp("")
+                    setOtpTimer(0)
+                  }}
+                  className="mb-2"
+                >
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Change Email
+                </Button>
+                
+                <form onSubmit={handleRegister} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="register-email-readonly">Email</Label>
+                    <Input
+                      id="register-email-readonly"
+                      type="email"
+                      value={registerForm.email}
+                      disabled
+                      className="bg-muted"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label>Enter OTP</Label>
+                    <OTPInput
+                      length={6}
+                      value={otp}
+                      onChange={setOtp}
+                      disabled={isLoading}
+                    />
+                    <div className="flex items-center justify-between text-sm mt-2">
+                      {otpTimer > 0 ? (
+                        <p className="text-muted-foreground">
+                          OTP expires in: <span className="font-semibold">{formatTime(otpTimer)}</span>
+                        </p>
+                      ) : (
+                        <p className="text-destructive">OTP expired</p>
+                      )}
+                      <Button
+                        type="button"
+                        variant="link"
+                        size="sm"
+                        onClick={handleResendOTP}
+                        disabled={!canResendOTP || isLoading}
+                        className="p-0 h-auto"
+                      >
+                        Resend OTP
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="register-name">Full Name</Label>
+                    <Input
+                      id="register-name"
+                      type="text"
+                      placeholder="Enter your full name"
+                      value={registerForm.name}
+                      onChange={(e) => setRegisterForm({ ...registerForm, name: e.target.value })}
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="register-password">Password</Label>
+                    <Input
+                      id="register-password"
+                      type="password"
+                      placeholder="Create a password"
+                      value={registerForm.password}
+                      onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })}
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="register-confirm-password">Confirm Password</Label>
+                    <Input
+                      id="register-confirm-password"
+                      type="password"
+                      placeholder="Confirm your password"
+                      value={registerForm.confirmPassword}
+                      onChange={(e) => setRegisterForm({ ...registerForm, confirmPassword: e.target.value })}
+                      required
+                    />
+                  </div>
+                  
+                  <Button type="submit" className="w-full" disabled={isLoading || otp.length !== 6}>
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Creating account...
+                      </>
+                    ) : (
+                      "Create Account"
+                    )}
+                  </Button>
+                </form>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="register-email">Email</Label>
-                <Input
-                  id="register-email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={registerForm.email}
-                  onChange={(e) => setRegisterForm({ ...registerForm, email: e.target.value })}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="register-password">Password</Label>
-                <Input
-                  id="register-password"
-                  type="password"
-                  placeholder="Create a password"
-                  value={registerForm.password}
-                  onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="register-confirm-password">Confirm Password</Label>
-                <Input
-                  id="register-confirm-password"
-                  type="password"
-                  placeholder="Confirm your password"
-                  value={registerForm.confirmPassword}
-                  onChange={(e) => setRegisterForm({ ...registerForm, confirmPassword: e.target.value })}
-                  required
-                />
-              </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating account...
-                  </>
-                ) : (
-                  "Create Account"
-                )}
-              </Button>
-            </form>
+            )}
           </TabsContent>
         </Tabs>
         
