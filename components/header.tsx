@@ -283,13 +283,18 @@ export function Header() {
                       </div>
                     )}
                   </div>
+                  <div className="flex flex-col space-y-3 pt-4 border-t">
+                    <Link href="/find-us" className="text-sm hover:text-primary transition-colors">Find Us</Link>
+                    <Link href="/help" className="text-sm hover:text-primary transition-colors">Help</Link>
+                    <Link href="/join-us" className="text-sm hover:text-primary transition-colors">Join Us</Link>
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>
           </div>
 
           {/* Desktop links right aligned */}
-          <nav className="md:flex items-center gap-6 text-xs text-primary ml-auto">
+          <nav className="hidden md:flex items-center gap-6 text-xs text-primary ml-auto">
             <Link href="/find-us" className="hover:text-foreground transition-colors">Find Us</Link>
             <span className="text-muted-foreground/40">|</span>
             <Link href="/help" className="hover:text-foreground transition-colors">Help</Link>
