@@ -239,6 +239,72 @@ export async function sendOTP(email: string): Promise<{ success: boolean; messag
   }
 }
 
+// Forgot Password: Send OTP
+export async function sendForgotPasswordOTP(
+  email: string
+): Promise<{ success: boolean; message?: string; error?: string }> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/forgot-password/send-otp`, {
+      method: 'POST',
+      headers: defaultHeaders,
+      body: JSON.stringify({ email }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      return {
+        success: false,
+        error: errorData.message || errorData.error || 'Failed to send password reset OTP',
+      };
+    }
+
+    const data = await response.json().catch(() => ({}));
+    return {
+      success: true,
+      message: data.message || 'Password reset OTP sent to email',
+    };
+  } catch (error) {
+    console.error('Forgot Password - Send OTP error:', error);
+    return {
+      success: false,
+      error: 'Network error. Please try again.',
+    };
+  }
+}
+
+// Forgot Password: Reset using OTP
+export async function resetPasswordWithOTP(
+  params: { email: string; otp: string; newPassword: string }
+): Promise<{ success: boolean; message?: string; error?: string }> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/forgot-password/reset`, {
+      method: 'POST',
+      headers: defaultHeaders,
+      body: JSON.stringify(params),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      return {
+        success: false,
+        error: errorData.message || errorData.error || 'Password reset failed',
+      };
+    }
+
+    const data = await response.json().catch(() => ({}));
+    return {
+      success: true,
+      message: data.message || 'Password reset successful',
+    };
+  } catch (error) {
+    console.error('Forgot Password - Reset error:', error);
+    return {
+      success: false,
+      error: 'Network error. Please try again.',
+    };
+  }
+}
+
 export async function registerUser(data: RegisterRequest): Promise<{ success: boolean; data?: AuthResponse; error?: string }> {
   try {
     const response = await fetch(`${API_BASE_URL}/auth/register`, {
