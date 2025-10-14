@@ -13,7 +13,7 @@ import { useAuth } from "@/lib/auth-context"
 import { useToast } from "@/hooks/use-toast"
 import { User, Loader2, ArrowLeft } from "lucide-react"
 import { OTPInput } from "@/components/otp-input"
-import { sendOTP } from "@/lib/api"
+import { sendOTP, sendForgotPasswordOTP, resetPasswordWithOTP } from "@/lib/api"
 
 export function AuthDialog() {
   const { login, register } = useAuth()
@@ -26,6 +26,16 @@ export function AuthDialog() {
   const [otp, setOtp] = useState("")
   const [otpTimer, setOtpTimer] = useState(0)
   const [canResendOTP, setCanResendOTP] = useState(false)
+
+  // Forgot Password state
+  const [showForgot, setShowForgot] = useState(false)
+  const [forgotStep, setForgotStep] = useState<1 | 2>(1)
+  const [forgotEmail, setForgotEmail] = useState("")
+  const [forgotOTP, setForgotOTP] = useState("")
+  const [forgotPassword, setForgotPassword] = useState("")
+  const [forgotConfirmPassword, setForgotConfirmPassword] = useState("")
+  const [forgotOtpTimer, setForgotOtpTimer] = useState(0)
+  const [forgotCanResend, setForgotCanResend] = useState(false)
 
   const [loginForm, setLoginForm] = useState({
     email: "",
@@ -55,6 +65,22 @@ export function AuthDialog() {
     }
   }, [otpTimer])
 
+  // Timer for Forgot Password OTP expiration (10 minutes = 600 seconds)
+  useEffect(() => {
+    if (forgotOtpTimer > 0) {
+      const interval = setInterval(() => {
+        setForgotOtpTimer((prev) => {
+          if (prev <= 1) {
+            setForgotCanResend(true)
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+      return () => clearInterval(interval)
+    }
+  }, [forgotOtpTimer])
+
   // Format timer display
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
@@ -70,6 +96,15 @@ export function AuthDialog() {
       setOtpTimer(0)
       setCanResendOTP(false)
       setRegisterForm({ name: "", email: "", password: "", confirmPassword: "" })
+      // Reset forgot password state
+      setShowForgot(false)
+      setForgotStep(1)
+      setForgotEmail("")
+      setForgotOTP("")
+      setForgotPassword("")
+      setForgotConfirmPassword("")
+      setForgotOtpTimer(0)
+      setForgotCanResend(false)
     }
   }, [isOpen])
 
@@ -100,6 +135,137 @@ export function AuthDialog() {
       } else {
         toast({
           title: "Failed to send OTP",
+          description: result.error || "Please try again.",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleForgotSendOTP = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!forgotEmail) {
+      toast({
+        title: "Email required",
+        description: "Please enter your email address.",
+        variant: "destructive",
+      })
+      return
+    }
+    setIsLoading(true)
+    try {
+      const result = await sendForgotPasswordOTP(forgotEmail)
+      if (result.success) {
+        toast({
+          title: "OTP Sent!",
+          description: result.message || "Please check your email for the OTP.",
+        })
+        setForgotStep(2)
+        setForgotOtpTimer(600)
+        setForgotCanResend(false)
+      } else {
+        toast({
+          title: "Failed to send OTP",
+          description: result.error || "Please try again.",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleForgotResendOTP = async () => {
+    setIsLoading(true)
+    try {
+      const result = await sendForgotPasswordOTP(forgotEmail)
+      if (result.success) {
+        toast({
+          title: "OTP Resent!",
+          description: "A new OTP has been sent to your email.",
+        })
+        setForgotOtpTimer(600)
+        setForgotCanResend(false)
+        setForgotOTP("")
+      } else {
+        toast({
+          title: "Failed to resend OTP",
+          description: result.error || "Please try again.",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (forgotOTP.length !== 6) {
+      toast({
+        title: "Invalid OTP",
+        description: "Please enter the 6-digit OTP sent to your email.",
+        variant: "destructive",
+      })
+      return
+    }
+    if (forgotPassword.length < 6) {
+      toast({
+        title: "Password too short",
+        description: "Password must be at least 6 characters long.",
+        variant: "destructive",
+      })
+      return
+    }
+    if (forgotPassword !== forgotConfirmPassword) {
+      toast({
+        title: "Passwords don't match",
+        description: "Please make sure your passwords match.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    setIsLoading(true)
+    try {
+      const result = await resetPasswordWithOTP({ email: forgotEmail, otp: forgotOTP, newPassword: forgotPassword })
+      if (result.success) {
+        toast({
+          title: "Password reset successful",
+          description: "You can now sign in with your new password.",
+        })
+        // Prefill login email and go back to login form
+        setLoginForm({ email: forgotEmail, password: "" })
+        setShowForgot(false)
+        setForgotStep(1)
+        setForgotOTP("")
+        setForgotPassword("")
+        setForgotConfirmPassword("")
+        setForgotOtpTimer(0)
+        setForgotCanResend(false)
+      } else {
+        toast({
+          title: "Password reset failed",
           description: result.error || "Please try again.",
           variant: "destructive",
         })
@@ -258,58 +424,200 @@ export function AuthDialog() {
           </TabsList>
 
           <TabsContent value="login" className="space-y-4">
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="login-email">Email</Label>
-                <Input
-                  id="login-email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={loginForm.email}
-                  onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="login-password">Password</Label>
-                <Input
-                  id="login-password"
-                  type="password"
-                  placeholder="Enter your password"
-                  value={loginForm.password}
-                  onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
-                  required
-                />
-              </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Signing in...
-                  </>
+            {!showForgot ? (
+              <>
+                <form onSubmit={handleLogin} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="login-email">Email</Label>
+                    <Input
+                      id="login-email"
+                      type="email"
+                      placeholder="Enter your email"
+                      value={loginForm.email}
+                      onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="login-password">Password</Label>
+                      <Button
+                        type="button"
+                        variant="link"
+                        size="sm"
+                        className="p-0 h-auto"
+                        onClick={() => {
+                          setShowForgot(true)
+                          setForgotEmail(loginForm.email)
+                          setForgotStep(1)
+                          setForgotOTP("")
+                          setForgotPassword("")
+                          setForgotConfirmPassword("")
+                          setForgotOtpTimer(0)
+                          setForgotCanResend(false)
+                        }}
+                      >
+                        Forgot password?
+                      </Button>
+                    </div>
+                    <Input
+                      id="login-password"
+                      type="password"
+                      placeholder="Enter your password"
+                      value={loginForm.password}
+                      onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Signing in...
+                      </>
+                    ) : (
+                      "Sign In"
+                    )}
+                  </Button>
+                </form>
+                <div className="mt-4">
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-background px-2 text-muted-foreground">
+                        Or continue with
+                      </span>
+                    </div>
+                  </div>
+                  <div className="mt-6">
+                    <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
+                      <GoogleLoginButton />
+                    </GoogleOAuthProvider>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="space-y-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setShowForgot(false)
+                    setForgotStep(1)
+                    setForgotOTP("")
+                    setForgotPassword("")
+                    setForgotConfirmPassword("")
+                    setForgotOtpTimer(0)
+                    setForgotCanResend(false)
+                  }}
+                  className="mb-2"
+                >
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Back to Sign In
+                </Button>
+
+                {forgotStep === 1 ? (
+                  <form onSubmit={handleForgotSendOTP} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="forgot-email">Email</Label>
+                      <Input
+                        id="forgot-email"
+                        type="email"
+                        placeholder="Enter your email"
+                        value={forgotEmail}
+                        onChange={(e) => setForgotEmail(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <Button type="submit" className="w-full" disabled={isLoading}>
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Sending OTP...
+                        </>
+                      ) : (
+                        "Send OTP"
+                      )}
+                    </Button>
+                  </form>
                 ) : (
-                  "Sign In"
+                  <form onSubmit={handleResetPassword} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="forgot-email-readonly">Email</Label>
+                      <Input
+                        id="forgot-email-readonly"
+                        type="email"
+                        value={forgotEmail}
+                        disabled
+                        className="bg-muted"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Enter OTP</Label>
+                      <OTPInput
+                        length={6}
+                        value={forgotOTP}
+                        onChange={setForgotOTP}
+                        disabled={isLoading}
+                      />
+                      <div className="flex items-center justify-between text-sm mt-2">
+                        {forgotOtpTimer > 0 ? (
+                          <p className="text-muted-foreground">
+                            OTP expires in: <span className="font-semibold">{formatTime(forgotOtpTimer)}</span>
+                          </p>
+                        ) : (
+                          <p className="text-destructive">OTP expired</p>
+                        )}
+                        <Button
+                          type="button"
+                          variant="link"
+                          size="sm"
+                          onClick={handleForgotResendOTP}
+                          disabled={!forgotCanResend || isLoading}
+                          className="p-0 h-auto"
+                        >
+                          Resend OTP
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="forgot-password">New Password</Label>
+                      <Input
+                        id="forgot-password"
+                        type="password"
+                        placeholder="Create a new password"
+                        value={forgotPassword}
+                        onChange={(e) => setForgotPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="forgot-confirm-password">Confirm New Password</Label>
+                      <Input
+                        id="forgot-confirm-password"
+                        type="password"
+                        placeholder="Confirm your new password"
+                        value={forgotConfirmPassword}
+                        onChange={(e) => setForgotConfirmPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <Button type="submit" className="w-full" disabled={isLoading || forgotOTP.length !== 6}>
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Resetting...
+                        </>
+                      ) : (
+                        "Reset Password"
+                      )}
+                    </Button>
+                  </form>
                 )}
-              </Button>
-            </form>
-            <div className="mt-4">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">
-                    Or continue with
-                  </span>
-                </div>
               </div>
-              <div className="mt-6">
-                <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
-                  <GoogleLoginButton />
-                </GoogleOAuthProvider>
-              </div>
-            </div>
-          
+            )}
           </TabsContent>
 
           <TabsContent value="register" className="space-y-4">
