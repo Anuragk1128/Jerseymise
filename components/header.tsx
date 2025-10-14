@@ -383,12 +383,12 @@ export function Header() {
       <div className="bg-black text-white py-2 overflow-hidden relative">
         <div className="whitespace-nowrap">
           <div className="inline-block animate-marquee">
-            <span className="inline-block mx-8 text-sm font-gotham">🚚 Free Shipping on Orders Over ₹699</span>
+            <span className="inline-block mx-8 text-sm font-gotham">🚚 Free Shipping on All Orders</span>
             <span className="inline-block mx-8 text-sm font-gotham">✨ Hassle Free Returns & Exchanges</span>
             <span className="inline-block mx-8 text-sm font-gotham">💳 Secure Payment Options Available</span>
             <span className="inline-block mx-8 text-sm font-gotham">🎁 Special Offers for New Customers</span>
             {/* Duplicate content for seamless loop */}
-            <span className="inline-block mx-8 text-sm font-gotham">🚚 Free Shipping on Orders Over ₹699</span>
+            <span className="inline-block mx-8 text-sm font-gotham">🚚 Free Shipping on Orders All Orders</span>
             <span className="inline-block mx-8 text-sm font-gotham">✨ Hassle Free Returns & Exchanges</span>
             <span className="inline-block mx-8 text-sm font-gotham">💳 Secure Payment Options Available</span>
             <span className="inline-block mx-8 text-sm font-gotham">🎁 Special Offers for New Customers</span>

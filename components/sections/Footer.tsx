@@ -58,12 +58,12 @@ export function FooterSection() {
         {/* Bottom row */}
         <div className="mt-12 pt-8 border-t flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <Image src="/logo/JERSEYMISE_LOGO_BLACK_BG.svg" alt="Jerseymise mark" width={40} height={40} />
+            <Image src="/logo/JERSEYMISE_LOGO_WHITE_BG.svg" alt="Jerseymise mark" width={55} height={55} />
             <p className="font-gotham text-sm text-muted-foreground">© 2025 Jerseymise By House of Evolve. All rights reserved.</p>
           </div>
           <div className="flex items-center gap-4">
             <span className="font-semibold tracking-wide font-gotham">FOLLOW US</span>
-            <a aria-label="Facebook" href="#" className="text-muted-foreground hover:text-foreground"><Facebook className="h-5 w-5"/></a>
+            <a aria-label="Facebook" href="https://www.facebook.com/share/1Q52w3eVBZ/?mibextid=wwXIfr" className="text-muted-foreground hover:text-foreground"><Facebook className="h-5 w-5"/></a>
             <a aria-label="Instagram" href="https://www.instagram.com/jerseymise?igsh=MW9sa2x5cHZ6MG9rOA==" className="text-muted-foreground hover:text-foreground" target="_blank"><Instagram className="h-5 w-5"/></a>
           
           </div>
