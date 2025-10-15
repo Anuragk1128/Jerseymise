@@ -311,7 +311,7 @@ export function Header() {
         {/* Desktop layout */}
         <div className="hidden md:flex items-center w-full h-16 gap-4">
           {/* Left: Logo */}
-          <Link href="/" className="flex items-center gap-3 min-w-[120px] py-2" aria-label="Jerseymise Home">
+          <Link href="/" className="flex items-center gap-3 min-w-[120px] py-2 hover:scale-105" aria-label="Jerseymise Home">
             <Image src="/logo/JERSEYMISE_LOGO_WHITE_BG.svg" alt="Jerseymise mark" width={56} height={56} priority />
             <span className="sr-only">Jerseymise</span>
           </Link>
