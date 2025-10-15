@@ -58,7 +58,7 @@ export function FooterSection() {
         {/* Bottom row */}
         <div className="mt-12 pt-8 border-t flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <Image src="/logo/JERSEYMISE_LOGO_WHITE_BG.svg" alt="Jerseymise mark" width={55} height={55} />
+            <Image src="/logo/JERSEYMISE_LOGO_WHITE_BG.svg" alt="Jerseymise mark" width={55} height={55} className="hover:scale-105" />
             <p className="font-gotham text-sm text-muted-foreground">© 2025 Jerseymise By House of Evolve. All rights reserved.</p>
           </div>
           <div className="flex items-center gap-4">
