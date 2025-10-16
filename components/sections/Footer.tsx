@@ -24,9 +24,9 @@ export function FooterSection() {
           <div className="text-left">
             <ul className="space-y-4">
               <li><Link href="#" className="tracking-wide hover:underline">STOCKIST</Link></li>
-              <li><Link href="#" className="tracking-wide hover:underline">SEND US FEED BACK</Link></li>
+              <li><Link href="/feedback" className="tracking-wide hover:underline">SEND US FEEDBACK</Link></li>
               <li><Link href="#" className="tracking-wide hover:underline">SIZE GUIDE</Link></li>
-              <li><Link href="#" className="tracking-wide hover:underline">CUSTOMISED TEAMWEAR</Link></li>
+              <li><Link href="/kitbuilder" className="tracking-wide hover:underline">CUSTOMISED TEAMWEAR</Link></li>
             </ul>
           </div>
           <div className="text-left">
