@@ -23,9 +23,9 @@ export function FooterSection() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="text-left">
             <ul className="space-y-4">
-              <li><Link href="#" className="tracking-wide hover:underline">STOCKIST</Link></li>
+              <li><Link href="/Stockist" className="tracking-wide hover:underline">STOCKIST</Link></li>
               <li><Link href="/feedback" className="tracking-wide hover:underline">SEND US FEEDBACK</Link></li>
-              <li><Link href="#" className="tracking-wide hover:underline">SIZE GUIDE</Link></li>
+              <li><Link href="/size-guide" className="tracking-wide hover:underline">SIZE GUIDE</Link></li>
               <li><Link href="/kitbuilder" className="tracking-wide hover:underline">CUSTOMISED TEAMWEAR</Link></li>
             </ul>
           </div>
