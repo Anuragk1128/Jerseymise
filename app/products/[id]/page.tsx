@@ -15,6 +15,7 @@ import type { Product } from "@/lib/types"
 import {ProductFilters, type FilterState} from "@/components/product-filters"
 import { useToast } from "@/hooks/use-toast"
 import { useAuth } from "@/lib/auth-context"
+import { ProductCard } from "@/components/product-card"
 
 
 
@@ -28,6 +29,7 @@ export default function ProductPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [product, setProduct] = useState<Product | null>(null)
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([])
+  const [isLoadingRelated, setIsLoadingRelated] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [filters, setFilters] = useState<FilterState>({
     categories: [],
@@ -131,13 +133,14 @@ export default function ProductPage() {
   useEffect(() => {
     const fetchRelatedProducts = async () => {
       if (!product) return;
-      
+
       try {
+        setIsLoadingRelated(true);
         // Fetch all products and filter by the same category
         const response = await getAllProducts("sportswear", { limit: 100 });
         let related = response.data.filter(
-          (p: any) => 
-            p._id !== product._id && 
+          (p: any) =>
+            p._id !== product._id &&
             p.status !== 'archived'
         );
 
@@ -147,7 +150,7 @@ export default function ProductPage() {
           related = related.filter((p: any) => {
             const productCategorySlug = getSlug(p.categoryId);
             console.log('Product category slug:', productCategorySlug, 'for product:', p.title);
-            const matches = filters.categories.some(category => 
+            const matches = filters.categories.some(category =>
               productCategorySlug.toLowerCase() === category.toLowerCase()
             );
             console.log('Matches filter:', matches);
@@ -177,6 +180,8 @@ export default function ProductPage() {
         setRelatedProducts(related.slice(0, 4));
       } catch (error) {
         console.error("Error fetching related products:", error);
+      } finally {
+        setIsLoadingRelated(false);
       }
     };
 
@@ -554,10 +559,28 @@ export default function ProductPage() {
         <div className="mt-16">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
             <h2 className="text-2xl font-bold">You might also like</h2>
+          </div>
+
+          {isLoadingRelated ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="space-y-4">
+                  <Skeleton className="aspect-square w-full rounded-lg" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-6 w-1/2" />
+                </div>
+              ))}
             </div>
-            
+          ) : relatedProducts.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {relatedProducts.map((product) => (
+                <ProductCard key={product._id} product={product} />
+              ))}
+            </div>
+          ) : (
             <p className="text-muted-foreground">No related products found.</p>
-          
+          )}
         </div>
       </div>
       <FooterSection/>
