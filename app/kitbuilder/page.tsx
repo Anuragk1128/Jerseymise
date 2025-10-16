@@ -4,6 +4,7 @@ import { useState } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { Header } from "@/components/header"
+import { FooterSection } from "@/components/sections/Footer"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -185,6 +186,7 @@ export default function KitBuilderPage() {
           </form>
         </div>
       </div>
+      <FooterSection/>
     </div>
   )
 }
