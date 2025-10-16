@@ -117,6 +117,7 @@ export default function SizeGuidePage() {
           </CardContent>
         </Card>
       </div>
+      <div className="mt-10"></div>
       <FooterSection/>
     </div>
   )
